@@ -4,6 +4,7 @@ TARGET=app.out
 OBJS=main.o\
 	BasicVariableInfo.o\
 	ArgumentParser.o\
+	Timer.o\
 	
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
