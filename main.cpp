@@ -16,7 +16,7 @@ void call_error(const int errcode) {
             cout << "Invalid argument on --printer_type\nAvailable values are:\n\"SlideFast\" \"CoreM\", \"CoreM_Multi\", \"Lugo\"" << endl;
         break;
         case ERR_DURATION_ARGS:
-            cout << "Invalid argument on —duration\nAvailable values for first args are: 1 ~ 999,\nAvailable values for second args are \"weeks\", \"hour\", \"day\", \"month\"\nSpecifically, exactly \"one space\" should be inserted between first args and second args." << endl;
+            cout << "Invalid argument on —-duration\nAvailable values for first args are: 1 ~ 999,\nAvailable values for second args are \"weeks\", \"hour\", \"day\", \"month\"\nSpecifically, exactly \"one space\" should be inserted between first args and second args." << endl;
         break;
         case ERR_FORCE_ARGS:
             cout << "Invalid argument on --force\nAvailable values are: 0 or 1" << endl;
@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
         // All arguments are used
     } else {
         // Maybe not all argumente are not used.
-        cout << "All argumente are needed, supported arguments are: --printer_type, --duration, --force" << endl;
+        cout << "All arguments are needed, supported arguments are: --printer_type, --duration, --force" << endl;
     }
     return 0;
 }
