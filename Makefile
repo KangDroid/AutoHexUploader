@@ -2,7 +2,8 @@ CC=g++
 CFLAGS=-Wall -O3 -std=gnu++2a
 TARGET=app.out
 OBJS=main.o\
-	BasicVariableInfo.o
+	BasicVariableInfo.o\
+	ArgumentParser.o\
 	
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@

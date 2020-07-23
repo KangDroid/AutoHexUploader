@@ -1,3 +1,6 @@
+#ifndef __BASICVARIABLEINFO_H__
+#define __BASICVARIABLEINFO_H__
+
 #include <iostream>
 
 #define ARGS_COUNT 3
@@ -19,3 +22,4 @@ public:
     bool is_used[ARGS_COUNT];
     bool isFullused();
 };
+#endif // __BASICVARIABLEINFO_H__
