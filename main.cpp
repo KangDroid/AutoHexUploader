@@ -21,6 +21,9 @@ void call_error(const int errcode) {
         case ERR_FORCE_ARGS:
             cout << "Invalid argument on --force\nAvailable values are: 0 or 1" << endl;
         break;
+        case ERR_UNKNOWN_ARGS:
+            cout << "Invalid argument detected.\nPlease check argument." << endl;
+        break;
     }
 }
 
@@ -114,6 +117,7 @@ int main(int argc, char** argv) {
             }
         } else {
             // Need to handle "Unknown args"
+            call_error(ERR_UNKNOWN_ARGS);
         }
     }
     // Check whether all arguments are used
