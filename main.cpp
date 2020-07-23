@@ -125,6 +125,7 @@ int main(int argc, char** argv) {
         // All arguments are used
     } else {
         // Maybe not all argumente are not used.
+        cout << "All argumente are needed, supported arguments are: --printer_type, --duration, --force" << endl;
     }
     return 0;
 }
