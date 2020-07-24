@@ -46,6 +46,10 @@ void PrinterInfo::printAllInfo() {
     cout << "profile: " << profile_name << endl;
 }
 
+bool PrinterInfo::getisPrinting() {
+    return this->is_printing;
+}
+
 PrinterInfo::PrinterInfo() {
     this->apikey = "F43FAA8F2FB54AE998A42737D40CADE7";
     this->url = "http://localhost";
