@@ -29,8 +29,8 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
             }
             
             if (!strcmp(argv[i], "SlideFast") || !strcmp(argv[i], "CoreM") || !strcmp(argv[i], "CoreM_Multi") || !strcmp(argv[i], "Lugo")) {
-                shared_variable.printer_type = string(argv[i]);
-                shared_variable.is_used[0] = true; // mark used
+                shared_variable->printer_type = string(argv[i]);
+                shared_variable->is_used[0] = true; // mark used
             } else {
                 // ERROR - not supported argument
                 call_error(ERR_PRINTER_TYPE_ARGS);
@@ -85,9 +85,9 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                 }
 
                 // set it
-                shared_variable.duration = dur_specifier;
-                shared_variable.duration_number = converted_number;
-                shared_variable.is_used[1] = true;
+                shared_variable->duration = dur_specifier;
+                shared_variable->duration_number = converted_number;
+                shared_variable->is_used[1] = true;
             } else {
                 call_error(ERR_DURATION_ARGS);
                 return false;
@@ -101,8 +101,8 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
             }
 
             if (!strcmp(argv[i], "0") || !strcmp(argv[i], "1")) {
-                shared_variable.is_force = atoi(argv[i]);
-                shared_variable.is_used[2] = true;
+                shared_variable->is_force = atoi(argv[i]);
+                shared_variable->is_used[2] = true;
             }
         } else {
             // Need to handle "Unknown args"
@@ -111,7 +111,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
         }
     }
     // Check whether all arguments are used
-    if (shared_variable.isFullused()) {
+    if (shared_variable->isFullused()) {
         // All arguments are used
         return true;
     } else {
@@ -121,6 +121,6 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
     }
 }
 
-ArgumentParser::ArgumentParser(BasicVariableInfo& b) {
+ArgumentParser::ArgumentParser(BasicVariableInfo* b) {
     this->shared_variable = b;
 }
