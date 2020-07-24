@@ -26,6 +26,7 @@ public:
     void checkPrintingStatus();
     void backupConnectionInfo();
     void printAllInfo();
+    void disconnect_server();
 
     bool getisPrinting();
 };

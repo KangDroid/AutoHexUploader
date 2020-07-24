@@ -46,6 +46,29 @@ void PrinterInfo::printAllInfo() {
     cout << "profile: " << profile_name << endl;
 }
 
+void PrinterInfo::disconnect_server() {
+    string command = "curl -s --request POST " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\" --header \"Content-Type: application/json; charset=utf-8\" -d \'{\"command\": \"disconnect\"}\'";
+    string command_check = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\"";
+    string output = "";
+    wrm.callRequest(output, command);
+    wrm.callRequest(output, command_check);
+    Json::Value main_json;
+    Json::Reader tmp_reader;
+    if (!tmp_reader.parse(output, main_json, false)) {
+        // Error
+        return;
+    } else {
+        Json::Value tmp_val = main_json["current"];
+        if (tmp_val["state"].asString() == "Closed") {
+            // Successfully disconnected from server
+            cout << "Closed!" << endl;
+        } else {
+            // It may not successfully disconnected from server
+            cout << "It is not properly closed!" << endl;
+        }
+    }
+}
+
 bool PrinterInfo::getisPrinting() {
     return this->is_printing;
 }
