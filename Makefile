@@ -6,6 +6,7 @@ OBJS=main.o\
 	ArgumentParser.o\
 	Timer.o\
 	jsoncpp.o\
+	WebRequestManager.o\
 	
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
