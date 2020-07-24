@@ -5,6 +5,7 @@ OBJS=main.o\
 	BasicVariableInfo.o\
 	ArgumentParser.o\
 	Timer.o\
+	jsoncpp.o\
 	
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
