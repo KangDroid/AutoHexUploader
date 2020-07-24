@@ -7,6 +7,7 @@ OBJS=main.o\
 	Timer.o\
 	jsoncpp.o\
 	WebRequestManager.o\
+	PrinterInfo.o\
 	
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
