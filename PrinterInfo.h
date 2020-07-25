@@ -23,8 +23,8 @@ private:
     WebRequestManager wrm;
 public:
     PrinterInfo();
-    void checkPrintingStatus();
-    void backupConnectionInfo();
+    bool checkPrintingStatus();
+    bool backupConnectionInfo();
     void printAllInfo();
     void disconnect_server();
 

@@ -1,5 +1,5 @@
 #include "PrinterInfo.h"
-void PrinterInfo::checkPrintingStatus() {
+bool PrinterInfo::checkPrintingStatus() {
     string command = "curl -s --request GET " + url + ":" + web_port + "/api/printer --header \"X-Api-Key:" + apikey + "\""; 
     string output = "";
     wrm.callRequest(output, command);
@@ -7,7 +7,7 @@ void PrinterInfo::checkPrintingStatus() {
     Json::Reader tmp_reader;
     if (!tmp_reader.parse(output, main_json, false)) {
         // Error
-        return;
+        return false;
     } else {
         Json::Value tmp_val = main_json["state"]["flags"];
         if (tmp_val["printing"].asString() == "true") {
@@ -17,12 +17,13 @@ void PrinterInfo::checkPrintingStatus() {
             this->is_printing = false;
         } else {
             // Error
-            return;
+            return false;
         }
     }
+    return true;
 }
 
-void PrinterInfo::backupConnectionInfo() {
+bool PrinterInfo::backupConnectionInfo() {
     string command = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\""; 
     string output = "";
     wrm.callRequest(output, command);
@@ -30,18 +31,19 @@ void PrinterInfo::backupConnectionInfo() {
     Json::Reader tmp_reader;
     if (!tmp_reader.parse(output, main_json, false)) {
         // Error
-        return;
+        return false;
     } else {
         Json::Value tmp_val = main_json["current"];
         if (tmp_val["baudrate"].isNull() || tmp_val["port"].isNull()) {
             // Error
             cout << "Printer seems like isn't connected to octoprinter" << endl;
-            return;
+            return false;
         }
         this->baudrate = tmp_val["baudrate"].asString();
         this->port = tmp_val["port"].asString();
         this->profile_name = tmp_val["printerProfile"].asString();
     }
+    return true;
 }
 
 void PrinterInfo::printAllInfo() {

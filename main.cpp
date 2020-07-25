@@ -25,24 +25,34 @@ int main(int argc, char** argv) {
         schedule_timer.set_schedule();
 
         // Caall Printing Status
-        printer_info.checkPrintingStatus();
-        if (printer_info.getisPrinting()) {
-            // Printer is using. 5 hour delay needed.
+        bool succeed = printer_info.checkPrintingStatus();
+        if (!succeed) {
+            // Network might be failed or whatever.
+            // 5 hour delay
         } else {
-            // Since printer is not using, so back up current connection settings
-            printer_info.backupConnectionInfo();
+            if (printer_info.getisPrinting()) {
+                // Printer is using. 5 hour delay needed.
+            } else {
+                // Since printer is not using, so back up current connection settings
+                bool succeed = printer_info.backupConnectionInfo();
 
-            // Get hex file from github
-            grm.download_hex();
+                if (!succeed) {
+                    // Network might be failed or whatever.
+                    // 5 hour delay!
+                } else {
+                    // Get hex file from github
+                    grm.download_hex();
 
-            // upload it
-            printer_info.upload_printer();
+                    // upload it
+                    printer_info.upload_printer();
 
-            // clean up
-            grm.cleanup();
-            printer_info.cleanup();
+                    // clean up
+                    grm.cleanup();
+                    printer_info.cleanup();
 
-            // reconnect it
+                    // reconnect it
+                }
+            }
         }
     }
     return 0;
