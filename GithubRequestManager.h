@@ -1,7 +1,9 @@
 #include <iostream>
 #include <filesystem>
+#include <cstdlib>
 #include "json/json.h"
 #include "WebRequestManager.h"
+#include "BasicVariableInfo.h"
 
 using namespace std;
 
@@ -10,8 +12,10 @@ private:
     bool is_connected;
     string download_url;
     string save_directory = "/tmp/tmp.zip";
+    string file_store = "/tmp/CompiledHex.hex";
     WebRequestManager wrm;
-public:
+    BasicVariableInfo* bvi;
+
     /**
      * Check whether release exists
      * this function will set download url if release exists.
@@ -19,14 +23,18 @@ public:
     void checkRelease();
 
     /**
-     * Download hex file from github
-     */
-    void download_hex();
-
-    /**
      * Buld hex from local
      */
     void build_hex();
+public:
+    GithubRequestManager(BasicVariableInfo* b) {
+        this->bvi = b;
+    }
+
+    /**
+     * Download hex file from github
+     */
+    void download_hex();
 
     // Remove file
     void remove_file();

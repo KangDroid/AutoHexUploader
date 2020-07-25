@@ -31,9 +31,11 @@ void GithubRequestManager::checkRelease() {
 }
 
 void GithubRequestManager::download_hex() {
+    // Call CheckRelease for connectivity and availability
+    checkRelease();
     if (!this->is_connected) {
-        // Need to call build_hex()
         cout << "Calling build_hex" << endl;
+        build_hex();
         return;
     }
     cout << "Downloading Files..." << endl;
@@ -44,6 +46,26 @@ void GithubRequestManager::download_hex() {
         cout << "It does not exists!" << endl;
         // Need to call build_hex()
         return;
+    }
+    
+    // Unzip it!
+    command = "unzip " + this->save_directory + " -d /tmp/tmp";
+    system(command.c_str());
+
+    // Move it!
+    command = "mv /tmp/tmp/" + bvi->printer_type + "*.hex " + file_store;
+    system(command.c_str());
+}
+
+void GithubRequestManager::build_hex() {
+    // Since we are building hex from local device.
+    system("./test.sh >> /tmp/buildlog");
+
+    if (!filesystem::exists(file_store)) {
+        // Build also failed
+        return;
+    } else {
+        cout << "Build Complete!" << endl;
     }
 }
 

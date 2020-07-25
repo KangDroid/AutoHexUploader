@@ -6,6 +6,7 @@
 #include "ArgumentParser.h"
 #include "Timer.h"
 #include "PrinterInfo.h"
+#include "GithubRequestManager.h"
 
 #define ARGS_COUNT 3
 
@@ -16,6 +17,7 @@ int main(int argc, char** argv) {
     Timer schedule_timer(&bvi);
     ArgumentParser parser(&bvi);
     PrinterInfo printer_info;
+    GithubRequestManager grm(&bvi);
 
     bool is_parsed = parser.parser_args(argc, argv);
     if (is_parsed) {
@@ -31,6 +33,8 @@ int main(int argc, char** argv) {
             printer_info.backupConnectionInfo();
 
             // Get hex file from github
+            grm.download_hex();
+
             // upload it
         }
     }
