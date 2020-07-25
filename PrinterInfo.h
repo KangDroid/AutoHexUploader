@@ -31,5 +31,6 @@ public:
     void upload_printer();
 
     bool getisPrinting();
+    void reconnect_server();
     void cleanup();
 };

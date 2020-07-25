@@ -77,7 +77,7 @@ void PrinterInfo::disconnect_server() {
 }
 
 void PrinterInfo::upload_printer()  {
-    string to_upload = "/tmp/CompiledHex.hex"; // This needs to be forwared from githubrequest.
+    string to_upload = "/Users/kangdroid/Desktop/Marlin.hex"; // This needs to be forwared from githubrequest.
     string command;
     // First disconnect from octoprint server
     disconnect_server();
@@ -100,6 +100,11 @@ void PrinterInfo::upload_printer()  {
 
 bool PrinterInfo::getisPrinting() {
     return this->is_printing;
+}
+
+void PrinterInfo::reconnect_server() {
+    string command = "curl -s --request POST " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\" --header \"Content-Type: application/json; charset=utf-8\" -d \'{\"command\": \"connect\", \"port\": \"" + port +"\", \"baudrate\": "+ baudrate +", \"printerProfile\": \"" + profile_name + "\", \"save\": true, \"autoconnect\": false}\'";
+    system(command.c_str());
 }
 
 void PrinterInfo::cleanup() {
