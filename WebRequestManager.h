@@ -1,3 +1,6 @@
+#ifndef __WEBREQUESTMANAGER_H__
+#define __WEBREQUESTMANAGER_H__
+
 #include <iostream>
 #include <cstdlib>
 
@@ -12,3 +15,4 @@ public:
      */
     static void callRequest(string& output, string command);
 };
+#endif // __WEBREQUESTMANAGER_H__

@@ -8,6 +8,7 @@ OBJS=main.o\
 	jsoncpp.o\
 	WebRequestManager.o\
 	PrinterInfo.o\
+	GithubRequestManager.o\
 	
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
