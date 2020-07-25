@@ -36,6 +36,11 @@ int main(int argc, char** argv) {
             grm.download_hex();
 
             // upload it
+            printer_info.upload_printer();
+
+            // clean up
+
+            // reconnect it
         }
     }
     return 0;

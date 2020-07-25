@@ -69,6 +69,27 @@ void PrinterInfo::disconnect_server() {
     }
 }
 
+void PrinterInfo::upload_printer()  {
+    string to_upload = "/tmp/CompiledHex.hex"; // This needs to be forwared from githubrequest.
+    string command;
+    // First disconnect from octoprint server
+    disconnect_server();
+    #if defined(__APPLE__)
+    // Download arduino
+    command = "wget https://www.arduino.cc/download.php?f=/arduino-1.8.13-macosx.zip -O /tmp/arduino.zip";
+    system(command.c_str());
+    // Unzip it
+    command = "unzip /tmp/arduino.zip -d /tmp/arduino";
+    system(command.c_str());
+    // Find avrdude.conf
+    string avrdude_configuration = "/tmp/arduino/Arduino.app/Contents/Java/hardware/tools/avr/etc/avrdude.conf";
+    string avrdude_binary = "/tmp/arduino/Arduino.app/Contents/Java/hardware/tools/avr/bin/avrdude";
+    string command_upload = "\"" + avrdude_binary + "\" -D -C\"" + avrdude_configuration +"\" -patmega2560 -P" + this->port + " -cwiring -b115200 -Uflash:w:" + to_upload;
+    system(command_upload.c_str());
+    #else
+    #endif
+}
+
 bool PrinterInfo::getisPrinting() {
     return this->is_printing;
 }

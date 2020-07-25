@@ -28,5 +28,7 @@ public:
     void printAllInfo();
     void disconnect_server();
 
+    void upload_printer();
+
     bool getisPrinting();
 };
