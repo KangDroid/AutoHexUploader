@@ -69,7 +69,13 @@ void GithubRequestManager::build_hex() {
     }
 }
 
-void GithubRequestManager::remove_file() {
+void GithubRequestManager::cleanup() {
+    // remove fw directory
     string command = "rm " + save_directory;
+    system(command.c_str());
+    system("rm -rf /tmp/tmp");
+
+    // remove file_store
+    command = "rm " + file_store;
     system(command.c_str());
 }

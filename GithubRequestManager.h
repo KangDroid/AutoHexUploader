@@ -37,5 +37,5 @@ public:
     void download_hex();
 
     // Remove file
-    void remove_file();
+    void cleanup();
 };

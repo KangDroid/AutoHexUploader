@@ -33,6 +33,11 @@ void PrinterInfo::backupConnectionInfo() {
         return;
     } else {
         Json::Value tmp_val = main_json["current"];
+        if (tmp_val["baudrate"].isNull() || tmp_val["port"].isNull()) {
+            // Error
+            cout << "Printer seems like isn't connected to octoprinter" << endl;
+            return;
+        }
         this->baudrate = tmp_val["baudrate"].asString();
         this->port = tmp_val["port"].asString();
         this->profile_name = tmp_val["printerProfile"].asString();
@@ -85,6 +90,7 @@ void PrinterInfo::upload_printer()  {
     string avrdude_configuration = "/tmp/arduino/Arduino.app/Contents/Java/hardware/tools/avr/etc/avrdude.conf";
     string avrdude_binary = "/tmp/arduino/Arduino.app/Contents/Java/hardware/tools/avr/bin/avrdude";
     string command_upload = "\"" + avrdude_binary + "\" -D -C\"" + avrdude_configuration +"\" -patmega2560 -P" + this->port + " -cwiring -b115200 -Uflash:w:" + to_upload;
+    cout << command_upload << endl;
     system(command_upload.c_str());
     #else
     #endif
@@ -92,6 +98,16 @@ void PrinterInfo::upload_printer()  {
 
 bool PrinterInfo::getisPrinting() {
     return this->is_printing;
+}
+
+void PrinterInfo::cleanup() {
+    #if defined(__APPLE__)
+    // Download arduino
+    system("rm /tmp/arduino.zip");
+    // Unzip it
+    system("rm -rf /tmp/arduino");
+    #else
+    #endif
 }
 
 PrinterInfo::PrinterInfo() {

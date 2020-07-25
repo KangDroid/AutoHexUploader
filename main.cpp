@@ -39,6 +39,8 @@ int main(int argc, char** argv) {
             printer_info.upload_printer();
 
             // clean up
+            grm.cleanup();
+            printer_info.cleanup();
 
             // reconnect it
         }
