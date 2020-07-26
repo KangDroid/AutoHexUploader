@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-Wall -O3 -std=gnu++2a -Iinclude
+CFLAGS=-Wall -O3 -std=gnu++2a -Iinclude -Wno-deprecated-declarations
 TARGET=app.out
 OBJS=src/main.o\
 	src/BasicVariableInfo.o\
