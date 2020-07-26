@@ -21,7 +21,7 @@ time_t Timer::dateToStamp(int year, int month, int day, int hour) {
     return final_tmp;
 }
 
-void Timer::get_current_time_var(int& year, int& month, int& day, int& wday, int& hour) {
+void Timer::get_current_time_var(int& year, int& month, int& day, int& hour) {
     struct tm tm_container;
     time_t time_cur;
     time(&time_cur);
@@ -31,7 +31,6 @@ void Timer::get_current_time_var(int& year, int& month, int& day, int& wday, int
     year = tm_container.tm_year + 1900;
     month = tm_container.tm_mon + 1;
     day = tm_container.tm_mday;
-    wday = tm_container.tm_wday;
     hour = tm_container.tm_hour;
 }
 
@@ -48,30 +47,50 @@ void Timer::timestamp_to_var(time_t timestamp, int& year, int& month, int& day, 
     cout << "Year: " << year << " Month: " << month << " Day: " << day << " Hour: " << hour << endl;
 }
 
-void Timer::set_schedule() {   
+void Timer::set_schedule() {
+    int year, month, day, hour;
     // Step 1. Get human-readable date
-    int year, month, day, wday, hour;
-    get_current_time_var(year, month, day, wday, hour);
+    get_current_time_var(year, month, day, hour);
 
     // Step 2. Determine duration
     // Step 3. Set new date
+    int size_queue = next_execution.size();
+    int to_iterate = MAX_SCHEDULE - size_queue;
     cout << shared_var->duration << endl;
     if (shared_var->duration == "hour") {
-        hour += shared_var->duration_number;
+        for (int i = 0; i < to_iterate; i++) {
+            hour += shared_var->duration_number;
+            next_execution.push(dateToStamp(year, month, day, hour));
+        }
     } else if (shared_var->duration == "month") {
-        month += shared_var->duration_number;
+        for (int i = 0; i < to_iterate; i++) {
+            month += shared_var->duration_number;
+            next_execution.push(dateToStamp(year, month, day, hour));
+        }
     } else if (shared_var->duration == "week") {
-        day += 7 * shared_var->duration_number;
+        for (int i = 0; i < to_iterate; i++) {
+            day += 7 * shared_var->duration_number;
+            next_execution.push(dateToStamp(year, month, day, hour));
+        }
         cout << "Week specified" << endl;
     } else if (shared_var->duration == "day") {
-        day += shared_var->duration_number;
+        for (int i = 0; i < to_iterate; i++) {
+            day += shared_var->duration_number;
+            next_execution.push(dateToStamp(year, month, day, hour));
+        }
     }
-    // Step 4. convert to timestamp and set it.
-    this->next_execution = dateToStamp(year, month, day, hour);
+}
+
+void Timer::show_schedule() {
+    while (next_execution.size() != 0) {
+        cout << next_execution.front() << endl;
+        next_execution.pop();
+    }
 }
 
 Timer::Timer(BasicVariableInfo* v) {
     this->shared_var = v;
+    get_current_time_var(this->year_ref, this->month_ref, this->day_ref, this->hour_ref);
     // this->duration_integer = shared_var->duration_number;
     // this->duration_string = shared_var->duration;
 }
