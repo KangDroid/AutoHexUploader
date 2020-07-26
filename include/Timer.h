@@ -7,7 +7,6 @@ class Timer {
 private:
     BasicVariableInfo* shared_var;
     time_t next_execution;
-    int duration_integer;
     string duration_string;
 public:
     Timer(BasicVariableInfo* v);

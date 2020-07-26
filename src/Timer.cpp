@@ -1,6 +1,5 @@
 #include "Timer.h"
 time_t Timer::get_current_time_ts() {
-    struct tm tm_container;
     time_t time_cur;
     time(&time_cur);
     return time_cur;
