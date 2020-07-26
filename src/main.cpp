@@ -29,6 +29,7 @@ int main(int argc, char** argv) {
         if (!succeed) {
             // Network might be failed or whatever.
             // 5 hour delay
+            cout << "Cannot check printing status" << endl;
         } else {
             if (printer_info.getisPrinting()) {
                 // Printer is using. 5 hour delay needed.
@@ -39,6 +40,7 @@ int main(int argc, char** argv) {
                 if (!succeed) {
                     // Network might be failed or whatever.
                     // 5 hour delay!
+                    cout << "Cannot ge t printing information from local octoprint server" << endl;
                 } else {
                     // Get hex file from github
                     grm.download_hex();
@@ -51,6 +53,7 @@ int main(int argc, char** argv) {
                     printer_info.cleanup();
 
                     // reconnect it
+                    printer_info.reconnect_server();
                 }
             }
         }
