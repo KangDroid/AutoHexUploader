@@ -119,7 +119,7 @@ bool PrinterInfo::upload_printer()  {
     }
     #if defined(__APPLE__)
     // Download arduino
-    command = "wget https://www.arduino.cc/download.php?f=/arduino-1.8.13-macosx.zip -O /tmp/arduino.zip";
+    command = "wget https://www.arduino.cc/download.php?f=/arduino-1.8.13-macosx.zip -O /tmp/arduino.zip 2>&1";
     ErrorLogger::log_v(func_code, "Executing Command: " + command);
     string output;
     wrm.callRequest(output, command);
@@ -135,7 +135,7 @@ bool PrinterInfo::upload_printer()  {
     // Find avrdude.conf
     string avrdude_configuration = "/tmp/arduino/Arduino.app/Contents/Java/hardware/tools/avr/etc/avrdude.conf";
     string avrdude_binary = "/tmp/arduino/Arduino.app/Contents/Java/hardware/tools/avr/bin/avrdude";
-    string command_upload = "\"" + avrdude_binary + "\" -D -C\"" + avrdude_configuration +"\" -patmega2560 -P" + this->port + " -cwiring -b115200 -Uflash:w:" + to_upload;
+    string command_upload = "\"" + avrdude_binary + "\" -D -C\"" + avrdude_configuration +"\" -patmega2560 -P" + this->port + " -cwiring -b115200 -Uflash:w:" + to_upload + " 2>&1";
     ErrorLogger::log_v(func_code, "Executing Command: " + command_upload);
     wrm.callRequest(output, command_upload);
     ErrorLogger::log_v(func_code, output);
@@ -163,7 +163,7 @@ bool PrinterInfo::reconnect_server() {
     sleep(10); //Maximum timeout
 
     // Check printer status
-    command = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey +"\"";
+    command = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey +"\"" + " 2>&1";
     ErrorLogger::log_v(func_code, "Executing Command: " + command);
     wrm.callRequest(output, command);
     ErrorLogger::log_v(func_code, output);

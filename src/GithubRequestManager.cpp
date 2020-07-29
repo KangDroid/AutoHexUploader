@@ -54,7 +54,7 @@ bool GithubRequestManager::download_hex() {
     }
     cout << "Downloading Files..." << endl;
     ErrorLogger::log_v(func_code, "Downloading files...");
-    string command = "curl -L "  + this->download_url + " > " + this->save_directory;
+    string command = "wget -O " + this->save_directory + " " + this->download_url + " 2>&1";
     ErrorLogger::log_v(func_code, "Executing Command: " + command);
     string output;
     wrm.callRequest(output, command);
