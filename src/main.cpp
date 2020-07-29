@@ -13,6 +13,11 @@
 using namespace std;
 
 int main(int argc, char** argv) {
+    bool stream_opened = Logger::initiate_stream("test.txt");
+    if (!stream_opened) {
+        cout << "Error: Logging failed at some reason." << endl;
+        cout << "Skipping error logging" << endl;
+    }
     BasicVariableInfo bvi;
     Timer schedule_timer(&bvi);
     ArgumentParser parser(&bvi);
@@ -60,15 +65,13 @@ int main(int argc, char** argv) {
                     bool success = printer_info.reconnect_server();
                     if (!success) {
                         cout << "Error" << endl;
-                        Logger el("test.txt");
-                        el.write_file();
+                        Logger::close_stream();
                         return -1;
                     }
                 }
             }
         }
     }
-    Logger el("test.txt");
-    el.write_file();
+    Logger::close_stream();
     return 0;
 }

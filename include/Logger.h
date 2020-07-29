@@ -8,12 +8,8 @@
 using namespace std;
 
 class Logger {
-private:
-    string path_to_save;
-    ofstream save;
 public:
-    Logger(string path);
-    void write_file();
+    static ofstream save;
     static string log_full;
     // Log_E for Error logging
     static void log_e(string fcode, string output);
@@ -23,6 +19,12 @@ public:
 
     // Timer function
     static string get_cur_time();
+
+    // Initiate ofstream
+    static bool initiate_stream(string path);
+
+    // Close ofstream
+    static bool close_stream();
 
     static void print_all() {
         cout << log_full << endl;
