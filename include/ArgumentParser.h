@@ -2,7 +2,7 @@
 
 #include "BasicVariableInfo.h"
 #include "errorcode.h"
-#include "ErrorLogger.h"
+#include "Logger.h"
 
 class ArgumentParser {
 private:

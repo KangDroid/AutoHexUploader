@@ -7,12 +7,12 @@
 
 using namespace std;
 
-class ErrorLogger {
+class Logger {
 private:
     string path_to_save;
     ofstream save;
 public:
-    ErrorLogger(string path);
+    Logger(string path);
     void write_file();
     static string log_full;
     // Log_E for Error logging

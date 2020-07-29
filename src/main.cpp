@@ -60,15 +60,15 @@ int main(int argc, char** argv) {
                     bool success = printer_info.reconnect_server();
                     if (!success) {
                         cout << "Error" << endl;
-                        ErrorLogger el("test.txt");
-    el.write_file();
+                        Logger el("test.txt");
+                        el.write_file();
                         return -1;
                     }
                 }
             }
         }
     }
-    ErrorLogger el("test.txt");
+    Logger el("test.txt");
     el.write_file();
     return 0;
 }

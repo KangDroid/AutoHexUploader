@@ -4,7 +4,7 @@
 #include "json/json.h"
 #include "WebRequestManager.h"
 #include "BasicVariableInfo.h"
-#include "ErrorLogger.h"
+#include "Logger.h"
 
 using namespace std;
 

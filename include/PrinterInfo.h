@@ -1,7 +1,7 @@
 #include <iostream>
 #include <unistd.h>
 #include "WebRequestManager.h"
-#include "ErrorLogger.h"
+#include "Logger.h"
 #include "json/json.h"
 
 using namespace std;

@@ -1,17 +1,17 @@
-#include "ErrorLogger.h"
-string ErrorLogger::log_full = "";
+#include "Logger.h"
+string Logger::log_full = "";
 
-void ErrorLogger::log_e(string function_name, string output) {
+void Logger::log_e(string function_name, string output) {
     string final_output = get_cur_time() + "::" + "[E]/" + function_name + ": " + output + "\n";
     log_full.append(final_output);
 }
 
-void ErrorLogger::log_v(string function_name, string output) {
+void Logger::log_v(string function_name, string output) {
     string final_output = get_cur_time() + "::" + "[V]/" + function_name + ": " + output + "\n";
     log_full.append(final_output);
 }
 
-string ErrorLogger::get_cur_time() {
+string Logger::get_cur_time() {
     time_t cur = time(NULL);
     struct tm tmp_timerst;
     char buffer[40];
@@ -22,12 +22,12 @@ string ErrorLogger::get_cur_time() {
 
     return string(buffer);
 }
-ErrorLogger::ErrorLogger(string path) {
+Logger::Logger(string path) {
     this->path_to_save = path;
     save.open(path_to_save);
 }
 
-void ErrorLogger::write_file() {
+void Logger::write_file() {
     if (!save.is_open()) {
         return;
     }
