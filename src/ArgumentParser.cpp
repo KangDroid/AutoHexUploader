@@ -18,6 +18,12 @@ void ArgumentParser::call_error(const int errcode) {
 }
 
 bool ArgumentParser::parser_args(int argc, char** argv) {
+    string function_code = string(__func__);
+    string tmp_logger = "";
+    for (int i = 0; i < argc; i++) {
+        tmp_logger += string(argv[i]) + " ";
+    }
+    ErrorLogger::log_v(function_code, "Argument Count: " + to_string(argc) + "\n" + "Arguments: " + tmp_logger);
     // Parse function
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--printer_type")) {
@@ -25,6 +31,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                 i++;
             } else {
                 call_error(ERR_PRINTER_TYPE_ARGS);
+                ErrorLogger::log_e(function_code, "Value is not specified for --printer_type");
                 return false;
             }
             
@@ -34,6 +41,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
             } else {
                 // ERROR - not supported argument
                 call_error(ERR_PRINTER_TYPE_ARGS);
+                ErrorLogger::log_e(function_code, "Invalid Argument Detected: " + string(argv[i]));
                 return false;
             }
         } else if (!strcmp(argv[i], "--duration")) {
@@ -41,6 +49,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                 i++;
             } else {
                 call_error(ERR_DURATION_ARGS);
+                ErrorLogger::log_e(function_code, "Value is not specified for --duration");
                 return false;
             }
             string number;
@@ -54,12 +63,14 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                 // Check length of number(Should be 0 to 999);
                 if (number.length() > 3) {
                     call_error(ERR_DURATION_ARGS);
+                    ErrorLogger::log_e(function_code, "Duration: Number should be between 0 ~ 999, input was: " + number);
                     return false;
                 }
 
                 // Check prefix 0
                 if (number.at(0) == '0') {
                     call_error(ERR_DURATION_ARGS);
+                    ErrorLogger::log_e(function_code, "Duration: Prefix 0 is not supported");
                     return false;
                 }
 
@@ -70,17 +81,20 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                 } catch (const exception& expn) {
                     // Cannot parse as int
                     call_error(ERR_DURATION_ARGS);
+                    ErrorLogger::log_e(function_code, "Duration: Cannot convert number: " + number);
                     return false;
                 }
 
                 if (converted_number < 1 || converted_number > 999) {
                     call_error(ERR_DURATION_ARGS);
+                    ErrorLogger::log_e(function_code, "Duration: Number should be between 0 ~ 999, input was: " + number);
                     return false;
                 }
 
                 // Check duration
                 if (dur_specifier != "hour" && dur_specifier != "month" && dur_specifier != "week" && dur_specifier != "day" && dur_specifier != "minute")  {
                     call_error(ERR_DURATION_ARGS);
+                    ErrorLogger::log_e(function_code, "Duration: Unsupported duration: " + dur_specifier);
                     return false;
                 }
 
@@ -90,6 +104,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                 shared_variable->is_used[1] = true;
             } else {
                 call_error(ERR_DURATION_ARGS);
+                ErrorLogger::log_e(function_code, "Duration: Specifier not found: " + argv_to_string);
                 return false;
             }
         } else if (!strcmp(argv[i], "--force")) {
@@ -97,6 +112,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                 i++;
             } else {
                 call_error(ERR_FORCE_ARGS);
+                ErrorLogger::log_e(function_code, "Value is not specified for --force");
                 return false;
             }
 
@@ -107,16 +123,19 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
         } else {
             // Need to handle "Unknown args"
             call_error(ERR_UNKNOWN_ARGS);
+            ErrorLogger::log_e(function_code, "Unknown Argument Detected");
             return false;
         }
     }
     // Check whether all arguments are used
     if (shared_variable->isFullused()) {
         // All arguments are used
+        ErrorLogger::log_v(function_code, "Successfully initiated arguments.");
         return true;
     } else {
         // Maybe not all argumente are not used.
         cout << "All arguments are needed, supported arguments are: --printer_type, --duration, --force" << endl;
+        ErrorLogger::log_e(function_code, "Arguments are NOT used at all");
         return false;
     }
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 #include "WebRequestManager.h"
+#include "ErrorLogger.h"
 #include "json/json.h"
 
 using namespace std;

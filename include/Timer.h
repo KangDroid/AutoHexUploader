@@ -3,6 +3,7 @@
 #include <queue>
 
 #include "BasicVariableInfo.h"
+#include "ErrorLogger.h"
 
 #define MAX_SCHEDULE 7
 

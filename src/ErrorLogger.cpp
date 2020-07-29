@@ -1,13 +1,13 @@
 #include "ErrorLogger.h"
 string ErrorLogger::log_full = "";
 
-void ErrorLogger::log_e(string output) {
-    string final_output = "[E]" + get_cur_time() + ":: " + output + "\n";
+void ErrorLogger::log_e(string function_name, string output) {
+    string final_output = get_cur_time() + "::" + "[E]/" + function_name + ": " + output;
     log_full.append(final_output);
 }
 
-void ErrorLogger::log_v(string output) {
-    string final_output = "[V]" + get_cur_time() + ":: " + output + "\n";
+void ErrorLogger::log_v(string function_name, string output) {
+    string final_output = get_cur_time() + "::" + "[V]/" + function_name + ": " + output;
     log_full.append(final_output);
 }
 

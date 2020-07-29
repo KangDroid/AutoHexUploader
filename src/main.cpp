@@ -63,5 +63,6 @@ int main(int argc, char** argv) {
             }
         }
     }
+    ErrorLogger::print_all();
     return 0;
 }

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include "ErrorLogger.h"
 
 using namespace std;
 
