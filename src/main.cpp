@@ -53,7 +53,8 @@ int main(int argc, char** argv) {
                     printer_info.cleanup();
 
                     // reconnect it
-                    printer_info.reconnect_server();
+                    bool success = printer_info.reconnect_server();
+                    if (!success) return -1;
                 }
             }
         }

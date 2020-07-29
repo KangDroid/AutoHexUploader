@@ -102,9 +102,29 @@ bool PrinterInfo::getisPrinting() {
     return this->is_printing;
 }
 
-void PrinterInfo::reconnect_server() {
+bool PrinterInfo::reconnect_server() {
+    // Issue Connection Request on Local Server
     string command = "curl -s --request POST " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\" --header \"Content-Type: application/json; charset=utf-8\" -d \'{\"command\": \"connect\", \"port\": \"" + port +"\", \"baudrate\": "+ baudrate +", \"printerProfile\": \"" + profile_name + "\", \"save\": true, \"autoconnect\": false}\'";
     system(command.c_str());
+
+    // Check printer status
+    command = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey +"\"";
+    string output;
+    wrm.callRequest(output, command);
+    Json::Value main_json;
+    Json::Reader tmp_reader;
+    if (!tmp_reader.parse(output, main_json, false)) {
+        // Error - Cannot parse
+        return false;
+    } else {
+        Json::Value tmp_val = main_json["current"]["state"];
+        if (tmp_val.asString() != "Operational") {
+            // Error: Printer is not connected after all.
+            return false;
+        }
+    }
+    // Return true
+    return true;
 }
 
 void PrinterInfo::cleanup() {
