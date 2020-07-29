@@ -1,5 +1,5 @@
 #include "GithubRequestManager.h"
-void GithubRequestManager::checkRelease() {   
+bool GithubRequestManager::checkRelease() {   
     string command = " curl -s -H \"Accept: application/vnd.github.v3+json\" https://api.github.com/repos/KangDroid/Marlin/releases";
     string output;
     wrm.callRequest(output, command);
@@ -7,14 +7,14 @@ void GithubRequestManager::checkRelease() {
     Json::Value main_json;
     Json::Reader tmp_reader;
     if (!tmp_reader.parse(output, main_json, false)) {
-        // Error
-        return;
+        // Error -- Cannot parse json properly
+        return false;
     } else {
         if (main_json.size() < 1) {
             // Error: Release is not found
             // Need to fall back compilation
             this->is_connected = false;
-            return;
+            return false;
         } else {
             // Newest one comes first.
             Json::Value tmp_json = main_json[0]["assets"];
@@ -22,21 +22,25 @@ void GithubRequestManager::checkRelease() {
                 // Error: Archive not found
                 // Need to fall back compilation
                 this->is_connected = false;
-                return;
+                return false;
             }
             this->download_url = tmp_json[0]["browser_download_url"].asString();
             this->is_connected = true;
         }
     }
+    return true;
 }
 
-void GithubRequestManager::download_hex() {
+bool GithubRequestManager::download_hex() {
     // Call CheckRelease for connectivity and availability
     checkRelease();
     if (!this->is_connected) {
         cout << "Calling build_hex" << endl;
-        build_hex();
-        return;
+        bool succ = build_hex();
+        if (!succ) {
+            // Build also failed
+            return false;
+        }
     }
     cout << "Downloading Files..." << endl;
     string command = "curl -s -L "  + this->download_url + " > " + this->save_directory;
@@ -45,7 +49,11 @@ void GithubRequestManager::download_hex() {
     if (!filesystem::exists(save_directory)) {
         cout << "It does not exists!" << endl;
         // Need to call build_hex()
-        return;
+        bool succ = build_hex();
+        if (!succ) {
+            // Build also failed
+            return false;
+        }
     }
     
     // Unzip it!
@@ -55,17 +63,20 @@ void GithubRequestManager::download_hex() {
     // Move it!
     command = "mv /tmp/tmp/" + bvi->printer_type + "*.hex " + file_store;
     system(command.c_str());
+
+    return true;
 }
 
-void GithubRequestManager::build_hex() {
+bool GithubRequestManager::build_hex() {
     // Since we are building hex from local device.
     system("./test.sh >> /tmp/buildlog");
 
     if (!filesystem::exists(file_store)) {
         // Build also failed
-        return;
+        return false;
     } else {
         cout << "Build Complete!" << endl;
+        return true;
     }
 }
 

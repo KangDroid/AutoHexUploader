@@ -43,7 +43,11 @@ int main(int argc, char** argv) {
                     cout << "Cannot ge t printing information from local octoprint server" << endl;
                 } else {
                     // Get hex file from github
-                    grm.download_hex();
+                    bool succ = grm.download_hex();
+                    if (!succ) {
+                        // Download or build failed
+                        return -1;
+                    }
 
                     // upload it
                     printer_info.upload_printer();

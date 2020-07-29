@@ -20,12 +20,12 @@ private:
      * Check whether release exists
      * this function will set download url if release exists.
      */
-    void checkRelease();
+    bool checkRelease();
 
     /**
      * Buld hex from local
      */
-    void build_hex();
+    bool build_hex();
 public:
     GithubRequestManager(BasicVariableInfo* b) {
         this->bvi = b;
@@ -34,7 +34,7 @@ public:
     /**
      * Download hex file from github
      */
-    void download_hex();
+    bool download_hex();
 
     // Remove file
     void cleanup();
