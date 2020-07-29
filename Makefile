@@ -9,6 +9,7 @@ OBJS=src/main.o\
 	src/WebRequestManager.o\
 	src/PrinterInfo.o\
 	src/GithubRequestManager.o\
+	src/ErrorLogger.o\
 	
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
