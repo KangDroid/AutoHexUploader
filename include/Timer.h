@@ -15,19 +15,20 @@ private:
     int month_ref;
     int day_ref;
     int hour_ref;
+    int min_ref;
 public:
     Timer(BasicVariableInfo* v);
     // returns current time in epoch timestamp
     time_t get_current_time_ts();
 
     // returns current time in variable type[integer]
-    void get_current_time_var(int& year, int& month, int& day, int& hour);
+    void get_current_time_var(int& year, int& month, int& day, int& hour, int& min);
 
     // returns base time in varialbe type
     void timestamp_to_var(time_t timestamp, int& year, int& month, int& day, int& hour);
 
     // Create timestamp from human readable date
-    time_t dateToStamp(int year, int month, int day, int hour);
+    time_t dateToStamp(int year, int month, int day, int hour, int min);
 
     // Set Schedule
     void set_schedule();

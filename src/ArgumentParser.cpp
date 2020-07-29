@@ -79,7 +79,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                 }
 
                 // Check duration
-                if (dur_specifier != "hour" && dur_specifier != "month" && dur_specifier != "week" && dur_specifier != "day") {
+                if (dur_specifier != "hour" && dur_specifier != "month" && dur_specifier != "week" && dur_specifier != "day" && dur_specifier != "minute")  {
                     call_error(ERR_DURATION_ARGS);
                     return false;
                 }
