@@ -5,7 +5,6 @@ OBJS=src/main.o\
 	src/BasicVariableInfo.o\
 	src/ArgumentParser.o\
 	src/Timer.o\
-	src/jsoncpp.o\
 	src/WebRequestManager.o\
 	src/PrinterInfo.o\
 	src/GithubRequestManager.o\
@@ -15,7 +14,7 @@ OBJS=src/main.o\
 	$(CC) $(CFLAGS) -c $< -o $@
 
 all: $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) lib/jsoncpp.precompiled
 
 clean:
 	find . -name "*.o" -exec rm {} \;
