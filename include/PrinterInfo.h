@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unistd.h>
 #include "WebRequestManager.h"
 #include "ErrorLogger.h"
 #include "json/json.h"

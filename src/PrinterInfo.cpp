@@ -160,6 +160,7 @@ bool PrinterInfo::reconnect_server() {
     string output;
     wrm.callRequest(output, command);
     ErrorLogger::log_v(func_code, output);
+    sleep(10); //Maximum timeout
 
     // Check printer status
     command = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey +"\"";
