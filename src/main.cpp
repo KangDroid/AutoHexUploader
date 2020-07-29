@@ -58,11 +58,17 @@ int main(int argc, char** argv) {
 
                     // reconnect it
                     bool success = printer_info.reconnect_server();
-                    if (!success) return -1;
+                    if (!success) {
+                        cout << "Error" << endl;
+                        ErrorLogger el("test.txt");
+    el.write_file();
+                        return -1;
+                    }
                 }
             }
         }
     }
-    ErrorLogger::print_all();
+    ErrorLogger el("test.txt");
+    el.write_file();
     return 0;
 }

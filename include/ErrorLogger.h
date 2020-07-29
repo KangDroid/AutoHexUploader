@@ -8,7 +8,12 @@
 using namespace std;
 
 class ErrorLogger {
+private:
+    string path_to_save;
+    ofstream save;
 public:
+    ErrorLogger(string path);
+    void write_file();
     static string log_full;
     // Log_E for Error logging
     static void log_e(string fcode, string output);

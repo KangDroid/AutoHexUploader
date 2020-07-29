@@ -161,7 +161,6 @@ bool PrinterInfo::reconnect_server() {
     wrm.callRequest(output, command);
     ErrorLogger::log_v(func_code, output);
 
-
     // Check printer status
     command = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey +"\"";
     ErrorLogger::log_v(func_code, "Executing Command: " + command);
