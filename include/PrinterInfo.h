@@ -26,9 +26,9 @@ public:
     bool checkPrintingStatus();
     bool backupConnectionInfo();
     void printAllInfo();
-    void disconnect_server();
+    bool disconnect_server();
 
-    void upload_printer();
+    bool upload_printer();
 
     bool getisPrinting();
     bool reconnect_server();

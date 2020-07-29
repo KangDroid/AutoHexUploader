@@ -53,7 +53,7 @@ void PrinterInfo::printAllInfo() {
     cout << "profile: " << profile_name << endl;
 }
 
-void PrinterInfo::disconnect_server() {
+bool PrinterInfo::disconnect_server() {
     string command = "curl -s --request POST " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\" --header \"Content-Type: application/json; charset=utf-8\" -d \'{\"command\": \"disconnect\"}\'";
     string command_check = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\"";
     string output = "";
@@ -62,8 +62,8 @@ void PrinterInfo::disconnect_server() {
     Json::Value main_json;
     Json::Reader tmp_reader;
     if (!tmp_reader.parse(output, main_json, false)) {
-        // Error
-        return;
+        // Error - Parse Failed
+        return false;
     } else {
         Json::Value tmp_val = main_json["current"];
         if (tmp_val["state"].asString() == "Closed") {
@@ -72,15 +72,22 @@ void PrinterInfo::disconnect_server() {
         } else {
             // It may not successfully disconnected from server
             cout << "It is not properly closed!" << endl;
+            // Disconnect failed
+            return false;
         }
     }
+    return true;
 }
 
-void PrinterInfo::upload_printer()  {
+bool PrinterInfo::upload_printer()  {
     string to_upload = "/Users/kangdroid/Desktop/Marlin.hex"; // This needs to be forwared from githubrequest.
     string command;
     // First disconnect from octoprint server
-    disconnect_server();
+    bool succeed = disconnect_server();
+    if (!succeed) {
+        // ERROR;
+        return false;
+    }
     #if defined(__APPLE__)
     // Download arduino
     command = "wget https://www.arduino.cc/download.php?f=/arduino-1.8.13-macosx.zip -O /tmp/arduino.zip";
@@ -96,6 +103,8 @@ void PrinterInfo::upload_printer()  {
     system(command_upload.c_str());
     #else
     #endif
+
+    return true;
 }
 
 bool PrinterInfo::getisPrinting() {
