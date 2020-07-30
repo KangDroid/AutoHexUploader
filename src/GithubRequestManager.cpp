@@ -3,9 +3,8 @@ bool GithubRequestManager::checkRelease() {
     string func_code = string(__func__);
     LOG_V("Entered.");
     string command = " curl -s -H \"Accept: application/vnd.github.v3+json\" https://api.github.com/repos/KangDroid/Marlin/releases";
-    LOG_V("Executing Command: " + command);
     string output;
-    wrm.callRequest(output, command);
+    wrm.callRequest(__LINE__, __func__, output, command);
 
     Json::Value main_json;
     Json::Reader tmp_reader;
@@ -56,10 +55,8 @@ bool GithubRequestManager::download_hex() {
     LOG_V("Downloading files...");
     string command = "wget -O " + this->save_directory + " " + this->download_url + " 2>&1";
 
-    LOG_V("Executing Command: " + command);
     string output;
-    wrm.callRequest(output, command);
-    LOG_V(output);
+    wrm.callRequest(__LINE__, __func__, output, command);
 
     if (!filesystem::exists(save_directory)) {
         cout << "It does not exists!" << endl;
@@ -75,15 +72,11 @@ bool GithubRequestManager::download_hex() {
     
     // Unzip it!
     command = "unzip " + this->save_directory + " -d /tmp/tmp";
-    LOG_V("Executing Command: " + command);
-    wrm.callRequest(output, command);
-    LOG_V(output);
+    wrm.callRequest(__LINE__, __func__, output, command);
 
     // Move it!
     command = "mv /tmp/tmp/" + bvi->printer_type + "*.hex " + file_store;
-    LOG_V("Executing Command: " + command);
-    wrm.callRequest(output, command);
-    LOG_V(output);
+    wrm.callRequest(__LINE__, __func__, output, command);
 
     LOG_V("Successfully downloaded hex file.");
     return true;

@@ -14,6 +14,6 @@ public:
      * output: this will be returned(that's why we are using reference)
      * command: to execute
      */
-    static void callRequest(string& output, string command);
+    static void callRequest(int line, string fcode, string& output, string command);
 };
 #endif // __WEBREQUESTMANAGER_H__

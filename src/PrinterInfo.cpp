@@ -1,12 +1,9 @@
 #include "PrinterInfo.h"
 bool PrinterInfo::checkPrintingStatus() {
-    string func_code = string(__func__);
     LOG_V("Entered.");
-    string command = "curl -s --request GET " + url + ":" + web_port + "/api/printer --header \"X-Api-Key:" + apikey + "\""; 
-    LOG_V("Executing Command: " + command);
+    string command = "curl -s --request GET " + url + ":" + web_port + "/api/printer --header \"X-Api-Key:" + apikey + "\" | jq"; 
     string output = "";
-    wrm.callRequest(output, command);
-    LOG_V(output);
+    wrm.callRequest(__LINE__, __func__, output, command);
     Json::Value main_json;
     Json::Reader tmp_reader;
     if (!tmp_reader.parse(output, main_json, false)) {
@@ -33,11 +30,9 @@ bool PrinterInfo::checkPrintingStatus() {
 bool PrinterInfo::backupConnectionInfo() {
     string func_code = string(__func__);
     LOG_V("Entered.");
-    string command = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\""; 
-    LOG_V("Executing Command: " + command);
+    string command = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\" | jq"; 
     string output = "";
-    wrm.callRequest(output, command);
-    LOG_V(output);
+    wrm.callRequest(__LINE__, __func__, output, command);
     Json::Value main_json;
     Json::Reader tmp_reader;
     if (!tmp_reader.parse(output, main_json, false)) {
@@ -71,16 +66,12 @@ bool PrinterInfo::disconnect_server() {
     string func_code = string(__func__);
     LOG_V("Entered.");
     string command = "curl -s --request POST " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\" --header \"Content-Type: application/json; charset=utf-8\" -d \'{\"command\": \"disconnect\"}\'";
-    string command_check = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\"";
+    string command_check = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\" | jq";
     string output = "";
 
-    LOG_V("Executing Command: " + command);
-    wrm.callRequest(output, command);
-    LOG_V(output);
+    wrm.callRequest(__LINE__, __func__, output, command);
 
-    LOG_V("Executing Command: " + command_check);
-    wrm.callRequest(output, command_check);
-    LOG_V(output);
+    wrm.callRequest(__LINE__, __func__, output, command_check);
 
     Json::Value main_json;
     Json::Reader tmp_reader;
@@ -120,50 +111,37 @@ bool PrinterInfo::upload_printer()  {
     #if defined(__APPLE__)
     // Download arduino
     command = "wget https://www.arduino.cc/download.php?f=/arduino-1.8.13-macosx.zip -O /tmp/arduino.zip 2>&1";
-    LOG_V("Executing Command: " + command);
     string output;
-    wrm.callRequest(output, command);
-    LOG_V(output);
-
+    wrm.callRequest(__LINE__, __func__, output, command);
 
     // Unzip it
     command = "unzip /tmp/arduino.zip -d /tmp/arduino";
-    LOG_V("Executing Command: " + command);
-    wrm.callRequest(output, command);
-    LOG_V(output);
+    wrm.callRequest(__LINE__, __func__, output, command);
 
     // Find avrdude.conf
     string avrdude_configuration = "/tmp/arduino/Arduino.app/Contents/Java/hardware/tools/avr/etc/avrdude.conf";
     string avrdude_binary = "/tmp/arduino/Arduino.app/Contents/Java/hardware/tools/avr/bin/avrdude";
     string command_upload = "\"" + avrdude_binary + "\" -D -C\"" + avrdude_configuration +"\" -patmega2560 -P" + this->port + " -cwiring -b115200 -Uflash:w:" + to_upload + " 2>&1";
-    LOG_V("Executing Command: " + command_upload);
-    wrm.callRequest(output, command_upload);
-    LOG_V(output);
+    wrm.callRequest(__LINE__, __func__, output, command_upload);
     #else
     // ARM-Raspberry Pi
     // Download arduino
     command = "wget https://www.arduino.cc/download.php?f=/arduino-1.8.13-linuxarm.tar.xz -O /tmp/arduino.tar.xz 2>&1";
-    LOG_V("Executing Command: " + command);
     string output;
-    wrm.callRequest(output, command);
-    LOG_V(output);
+    wrm.callRequest(__LINE__, __func__, output, command);
 
 
     // Unzip it
     command = "mkdir /tmp/arduino";
-    wrm.callRequest(output, command);
+    wrm.callRequest(__LINE__, __func__, output, command);
     command = "tar -xvf /tmp/arduino.tar.xz -C /tmp/arduino";
-    LOG_V("Executing Command: " + command);
-    wrm.callRequest(output, command);
-    LOG_V(output);
+    wrm.callRequest(__LINE__, __func__, output, command);
 
     // Find avrdude.conf
     string avrdude_configuration = "/tmp/arduino/arduino-1.8.13/hardware/tools/avr/etc/avrdude.conf";
     string avrdude_binary = "/tmp/arduino/arduino-1.8.13/hardware/tools/avr/bin/avrdude";
     string command_upload = "\"" + avrdude_binary + "\" -D -C\"" + avrdude_configuration +"\" -patmega2560 -P" + this->port + " -cwiring -b115200 -Uflash:w:" + to_upload + " 2>&1";
-    LOG_V("Executing Command: " + command_upload);
-    wrm.callRequest(output, command_upload);
-    LOG_V(output);
+    wrm.callRequest(__LINE__, __func__, output, command_upload);
     #endif
 
     LOG_V("Successfully uploaded hex file to printer");
@@ -180,17 +158,13 @@ bool PrinterInfo::reconnect_server() {
 
     // Issue Connection Request on Local Server
     string command = "curl --request POST " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\" --header \"Content-Type: application/json; charset=utf-8\" -d \'{\"command\": \"connect\", \"port\": \"" + port +"\", \"baudrate\": "+ baudrate +", \"printerProfile\": \"" + profile_name + "\", \"save\": true, \"autoconnect\": false}\'";
-    LOG_V("Executing Command: " + command);
     string output;
-    wrm.callRequest(output, command);
-    LOG_V(output);
+    wrm.callRequest(__LINE__, __func__, output, command);
     sleep(10); //Maximum timeout
 
     // Check printer status
-    command = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey +"\"" + " 2>&1";
-    LOG_V("Executing Command: " + command);
-    wrm.callRequest(output, command);
-    LOG_V(output);
+    command = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey +"\"" + " | jq";
+    wrm.callRequest(__LINE__, __func__, output, command);
 
     Json::Value main_json;
     Json::Reader tmp_reader;
