@@ -7,15 +7,18 @@
 
 using namespace std;
 
+#define LOG_E(to_message) Logger::log_e(__LINE__, __func__, to_message)
+#define LOG_V(to_message) Logger::log_v(__LINE__, __func__, to_message)
+
 class Logger {
 public:
     static ofstream save;
     static string log_full;
     // Log_E for Error logging
-    static void log_e(string fcode, string output);
+    static void log_e(int line, string fcode, string output);
 
     // Log_V for verbose logging
-    static void log_v(string fcode, string output);
+    static void log_v(int line, string fcode, string output);
 
     // Timer function
     static string get_cur_time();

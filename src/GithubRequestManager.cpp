@@ -1,9 +1,9 @@
 #include "GithubRequestManager.h"
 bool GithubRequestManager::checkRelease() {   
     string func_code = string(__func__);
-    Logger::log_v(func_code, "Entered.");
+    LOG_V("Entered.");
     string command = " curl -s -H \"Accept: application/vnd.github.v3+json\" https://api.github.com/repos/KangDroid/Marlin/releases";
-    Logger::log_v(func_code, "Executing Command: " + command);
+    LOG_V("Executing Command: " + command);
     string output;
     wrm.callRequest(output, command);
 
@@ -11,14 +11,14 @@ bool GithubRequestManager::checkRelease() {
     Json::Reader tmp_reader;
     if (!tmp_reader.parse(output, main_json, false)) {
         // Error -- Cannot parse json properly
-        Logger::log_e(func_code, "Cannot parse json file, Please see detailed information: \n" + tmp_reader.getFormattedErrorMessages());
+        LOG_E("Cannot parse json file, Please see detailed information: \n" + tmp_reader.getFormattedErrorMessages());
         return false;
     } else {
         if (main_json.size() < 1) {
             // Error: Release is not found
             // Need to fall back compilation
             this->is_connected = false;
-            Logger::log_e(func_code, "Successfully parsed json, but Release is NOT Found, falling back to compilation process..");
+            LOG_E("Successfully parsed json, but Release is NOT Found, falling back to compilation process..");
             return false;
         } else {
             // Newest one comes first.
@@ -27,20 +27,20 @@ bool GithubRequestManager::checkRelease() {
                 // Error: Archive not found
                 // Need to fall back compilation
                 this->is_connected = false;
-                Logger::log_e(func_code, "Successfully parsed json, release, but Archive is NOT Found, falling back to compilation process..");
+                LOG_E("Successfully parsed json, release, but Archive is NOT Found, falling back to compilation process..");
                 return false;
             }
             this->download_url = tmp_json[0]["browser_download_url"].asString();
             this->is_connected = true;
         }
     }
-    Logger::log_v(func_code, "Sucessfully checked release from GitHub.");
+    LOG_V("Sucessfully checked release from GitHub.");
     return true;
 }
 
 bool GithubRequestManager::download_hex() {
     string func_code = string(__func__);
-    Logger::log_v(func_code, "Entered.");
+    LOG_V("Entered.");
     // Call CheckRelease for connectivity and availability
     checkRelease();
     if (!this->is_connected) {
@@ -48,44 +48,44 @@ bool GithubRequestManager::download_hex() {
         bool succ = build_hex();
         if (!succ) {
             // Build also failed
-            Logger::log_e(func_code, "Build Hexfile failed detected, Cannot run program more.");
+            LOG_E("Build Hexfile failed detected, Cannot run program more.");
             return false;
         }
     }
     cout << "Downloading Files..." << endl;
-    Logger::log_v(func_code, "Downloading files...");
+    LOG_V("Downloading files...");
     string command = "wget -O " + this->save_directory + " " + this->download_url + " 2>&1";
 
-    Logger::log_v(func_code, "Executing Command: " + command);
+    LOG_V("Executing Command: " + command);
     string output;
     wrm.callRequest(output, command);
-    Logger::log_v(func_code, output);
+    LOG_V(output);
 
     if (!filesystem::exists(save_directory)) {
         cout << "It does not exists!" << endl;
-        Logger::log_v(func_code, "File is not downloaded somehow.");
+        LOG_V("File is not downloaded somehow.");
         // Need to call build_hex()
         bool succ = build_hex();
         if (!succ) {
             // Build also failed
-            Logger::log_e(func_code, "Build Hexfile failed detected, Cannot run program more.");
+            LOG_E("Build Hexfile failed detected, Cannot run program more.");
             return false;
         }
     }
     
     // Unzip it!
     command = "unzip " + this->save_directory + " -d /tmp/tmp";
-    Logger::log_v(func_code, "Executing Command: " + command);
+    LOG_V("Executing Command: " + command);
     wrm.callRequest(output, command);
-    Logger::log_v(func_code, output);
+    LOG_V(output);
 
     // Move it!
     command = "mv /tmp/tmp/" + bvi->printer_type + "*.hex " + file_store;
-    Logger::log_v(func_code, "Executing Command: " + command);
+    LOG_V("Executing Command: " + command);
     wrm.callRequest(output, command);
-    Logger::log_v(func_code, output);
+    LOG_V(output);
 
-    Logger::log_v(func_code, "Successfully downloaded hex file.");
+    LOG_V("Successfully downloaded hex file.");
     return true;
 }
 
@@ -96,11 +96,11 @@ bool GithubRequestManager::build_hex() {
 
     if (!filesystem::exists(file_store)) {
         // Build also failed
-        Logger::log_e(func_code, "Build failed somehow.");
+        LOG_E("Build failed somehow.");
         return false;
     } else {
         cout << "Build Complete!" << endl;
-        Logger::log_v(func_code, "Build Completed");
+        LOG_V("Build Completed");
         return true;
     }
 }
