@@ -140,6 +140,30 @@ bool PrinterInfo::upload_printer()  {
     wrm.callRequest(output, command_upload);
     Logger::log_v(func_code, output);
     #else
+    // ARM-Raspberry Pi
+    // Download arduino
+    command = "wget https://www.arduino.cc/download.php?f=/arduino-1.8.13-linuxarm.tar.xz -O /tmp/arduino.tar.xz 2>&1";
+    Logger::log_v(func_code, "Executing Command: " + command);
+    string output;
+    wrm.callRequest(output, command);
+    Logger::log_v(func_code, output);
+
+
+    // Unzip it
+    command = "mkdir /tmp/arduino";
+    wrm.callRequest(output, command);
+    command = "tar -xvf /tmp/arduino.tar.xz -C /tmp/arduino";
+    Logger::log_v(func_code, "Executing Command: " + command);
+    wrm.callRequest(output, command);
+    Logger::log_v(func_code, output);
+
+    // Find avrdude.conf
+    string avrdude_configuration = "/tmp/arduino/arduino-1.8.13/hardware/tools/avr/etc/avrdude.conf";
+    string avrdude_binary = "/tmp/arduino/arduino-1.8.13/hardware/tools/avr/bin/avrdude";
+    string command_upload = "\"" + avrdude_binary + "\" -D -C\"" + avrdude_configuration +"\" -patmega2560 -P" + this->port + " -cwiring -b115200 -Uflash:w:" + to_upload + " 2>&1";
+    Logger::log_v(func_code, "Executing Command: " + command_upload);
+    wrm.callRequest(output, command_upload);
+    Logger::log_v(func_code, output);
     #endif
 
     Logger::log_v(func_code, "Successfully uploaded hex file to printer");
