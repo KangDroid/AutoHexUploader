@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.17)
 project(AutoHexProject)
 
+if (APPLE)
+    set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl")
+    set(OPENSSL_LIBRARIES "/usr/local/opt/openssl/lib")
+endif()
+
 find_package(cpprestsdk REQUIRED)
 find_package (OpenSSL REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system)
