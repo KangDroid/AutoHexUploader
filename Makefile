@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-Wall -O3 -std=gnu++2a -Iinclude -Wno-deprecated-declarations -Wno-unneeded-internal-declaration
+CFLAGS=-Wall -g -O3 -std=gnu++2a -Iinclude -Wno-deprecated-declarations -Wno-unneeded-internal-declaration  -I/usr/local/include -I/usr/local/Cellar/openssl\@1.1/1.1.1g/include -lcpprest  -lboost_system -lboost_thread-mt -lboost_chrono-mt -lssl -lcrypto  -L/usr/local/opt/openssl/lib
 TARGET=app.out
 OBJS=src/main.o\
 	src/BasicVariableInfo.o\

@@ -1,9 +1,7 @@
 #include "PrinterInfo.h"
 bool PrinterInfo::checkPrintingStatus() {
     LOG_V("Entered.");
-    string command = "curl -s --request GET " + url + ":" + web_port + "/api/printer --header \"X-Api-Key:" + apikey + "\" | jq"; 
-    string output = "";
-    wrm.callRequest(__LINE__, __func__, output, command);
+    string output = CALL_REST_OCTO("GET", url + ":" + web_port + "/api/printer", apikey);
     Json::Value main_json;
     Json::Reader tmp_reader;
     if (!tmp_reader.parse(output, main_json, false)) {
@@ -11,6 +9,9 @@ bool PrinterInfo::checkPrintingStatus() {
         LOG_E("Cannot parse json file, Please see detailed information: \n" + tmp_reader.getFormattedErrorMessages());
         return false;
     } else {
+        Json::StyledWriter writer;
+        string json_output = writer.write(main_json);
+        LOG_V(json_output);
         Json::Value tmp_val = main_json["state"]["flags"];
         if (tmp_val["printing"].asString() == "true") {
             // It is printing
@@ -30,9 +31,7 @@ bool PrinterInfo::checkPrintingStatus() {
 bool PrinterInfo::backupConnectionInfo() {
     string func_code = string(__func__);
     LOG_V("Entered.");
-    string command = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\" | jq"; 
-    string output = "";
-    wrm.callRequest(__LINE__, __func__, output, command);
+    string output = CALL_REST_OCTO("GET", url + ":" + web_port + "/api/connection", apikey);
     Json::Value main_json;
     Json::Reader tmp_reader;
     if (!tmp_reader.parse(output, main_json, false)) {
@@ -40,6 +39,9 @@ bool PrinterInfo::backupConnectionInfo() {
         LOG_E("Cannot parse json file, Please see detailed information: \n" + tmp_reader.getFormattedErrorMessages());
         return false;
     } else {
+        Json::StyledWriter writer;
+        string json_output = writer.write(main_json);
+        LOG_V(json_output);
         Json::Value tmp_val = main_json["current"];
         if (tmp_val["baudrate"].isNull() || tmp_val["port"].isNull()) {
             // Error
@@ -65,13 +67,8 @@ void PrinterInfo::printAllInfo() {
 bool PrinterInfo::disconnect_server() {
     string func_code = string(__func__);
     LOG_V("Entered.");
-    string command = "curl -s --request POST " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\" --header \"Content-Type: application/json; charset=utf-8\" -d \'{\"command\": \"disconnect\"}\'";
-    string command_check = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\" | jq";
-    string output = "";
-
-    wrm.callRequest(__LINE__, __func__, output, command);
-
-    wrm.callRequest(__LINE__, __func__, output, command_check);
+    CALL_REST_OCTO_DISCONNECT(url + ":" + web_port + "/api/connection", apikey);
+    string output = CALL_REST_OCTO("GET", url + ":" + web_port + "/api/connection", apikey);
 
     Json::Value main_json;
     Json::Reader tmp_reader;
@@ -80,6 +77,9 @@ bool PrinterInfo::disconnect_server() {
         LOG_E("Cannot parse json file, Please see detailed information: \n" + tmp_reader.getFormattedErrorMessages());
         return false;
     } else {
+        Json::StyledWriter writer;
+        string json_output = writer.write(main_json);
+        LOG_V(json_output);
         Json::Value tmp_val = main_json["current"];
         if (tmp_val["state"].asString() == "Closed") {
             // Successfully disconnected from server
@@ -157,14 +157,11 @@ bool PrinterInfo::reconnect_server() {
     LOG_V("Entered.");
 
     // Issue Connection Request on Local Server
-    string command = "curl --request POST " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey + "\" --header \"Content-Type: application/json; charset=utf-8\" -d \'{\"command\": \"connect\", \"port\": \"" + port +"\", \"baudrate\": "+ baudrate +", \"printerProfile\": \"" + profile_name + "\", \"save\": true, \"autoconnect\": false}\'";
-    string output;
-    wrm.callRequest(__LINE__, __func__, output, command);
+    CALL_REST_OCTO_CONNECT(url + ":" + web_port + "/api/connection", apikey, port, baudrate, profile_name);
     sleep(10); //Maximum timeout
 
     // Check printer status
-    command = "curl -s --request GET " + url + ":" + web_port + "/api/connection --header \"X-Api-Key:" + apikey +"\"" + " | jq";
-    wrm.callRequest(__LINE__, __func__, output, command);
+    string output = CALL_REST_OCTO("GET", url + ":" + web_port + "/api/connection", apikey);
 
     Json::Value main_json;
     Json::Reader tmp_reader;
@@ -173,6 +170,9 @@ bool PrinterInfo::reconnect_server() {
         LOG_E("Cannot parse json file, Please see detailed information: \n" + tmp_reader.getFormattedErrorMessages());
         return false;
     } else {
+        Json::StyledWriter writer;
+        string json_output = writer.write(main_json);
+        LOG_V(json_output);
         Json::Value tmp_val = main_json["current"]["state"];
         if (tmp_val.asString() != "Operational") {
             // Error: Printer is not connected after all.

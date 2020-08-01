@@ -2,9 +2,7 @@
 bool GithubRequestManager::checkRelease() {   
     string func_code = string(__func__);
     LOG_V("Entered.");
-    string command = " curl -s -H \"Accept: application/vnd.github.v3+json\" https://api.github.com/repos/KangDroid/Marlin/releases";
-    string output;
-    wrm.callRequest(__LINE__, __func__, output, command);
+    string output = CALL_REST_GITHUB("GET", "https://api.github.com/repos/KangDroid/Marlin/releases");
 
     Json::Value main_json;
     Json::Reader tmp_reader;
@@ -21,6 +19,9 @@ bool GithubRequestManager::checkRelease() {
             return false;
         } else {
             // Newest one comes first.
+            Json::StyledWriter writer;
+            string json_output = writer.write(main_json);
+            LOG_V(json_output);
             Json::Value tmp_json = main_json[0]["assets"];
             if (tmp_json.size() < 1) {
                 // Error: Archive not found

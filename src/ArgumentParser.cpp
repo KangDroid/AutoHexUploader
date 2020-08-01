@@ -123,7 +123,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
         } else {
             // Need to handle "Unknown args"
             call_error(ERR_UNKNOWN_ARGS);
-            LOG_E("Unknown Argument Detected");
+            LOG_E("Unknown Argument Detected" + string(argv[i]));
             return false;
         }
     }
