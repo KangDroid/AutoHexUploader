@@ -192,6 +192,8 @@ void PrinterInfo::cleanup() {
     // Unzip it
     system("rm -rf /tmp/arduino");
     #else
+    system("rm /tmp/arduino.tar.xz ");
+    system("rm -rf /tmp/arduino")
     #endif
 }
 
