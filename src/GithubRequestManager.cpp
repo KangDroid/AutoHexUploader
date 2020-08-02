@@ -72,7 +72,7 @@ bool GithubRequestManager::download_hex() {
     }
     
     // Unzip it!
-    command = "unzip " + this->save_directory + " -d /tmp/tmp";
+    command = "unzip -q " + this->save_directory + " -d /tmp/tmp";
     wrm.callRequest(__LINE__, __func__, output, command);
 
     // Move it!

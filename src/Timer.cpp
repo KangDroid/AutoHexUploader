@@ -35,7 +35,7 @@ void Timer::get_current_time_var(int& year, int& month, int& day, int& hour, int
     min = tm_container.tm_min;
 }
 
-void Timer::timestamp_to_var(time_t timestamp, int& year, int& month, int& day, int& hour) {   
+void Timer::timestamp_to_var(time_t timestamp, int& year, int& month, int& day, int& hour, int& min) {   
     struct tm tm_container;
     tm_container = *localtime(&timestamp);
 
@@ -44,14 +44,19 @@ void Timer::timestamp_to_var(time_t timestamp, int& year, int& month, int& day, 
     month = tm_container.tm_mon + 1;
     day = tm_container.tm_mday;
     hour = tm_container.tm_hour;
+    min = tm_container.tm_min;
 
-    cout << "Year: " << year << " Month: " << month << " Day: " << day << " Hour: " << hour << endl;
+    //cout << "Year: " << year << " Month: " << month << " Day: " << day << " Hour: " << hour << endl;
 }
 
 void Timer::set_schedule() {
     int year, month, day, hour, min;
     // Step 1. Get human-readable date
-    get_current_time_var(year, month, day, hour, min);
+    if (next_execution.size() > 0) {
+        timestamp_to_var(next_execution.back(), year, month, day, hour, min);
+    } else {
+        get_current_time_var(year, month, day, hour, min);
+    }
 
     // Step 2. Determine duration
     // Step 3. Set new date
@@ -104,6 +109,19 @@ void Timer::show_schedule() {
         cout << next_execution.front() << endl;
         next_execution.pop();
     }
+}
+
+void Timer::sleep_des() {
+    const int offset = 2;
+    time_t popped_val = next_execution.front();
+    time_t cur = get_current_time_ts();
+    while (popped_val < cur) {
+        popped_val = next_execution.front(); next_execution.pop();
+    }
+    set_schedule(); // Check for more schedule
+
+    time_t to_sleep = popped_val - cur;
+    sleep(to_sleep - offset);
 }
 
 Timer::Timer(BasicVariableInfo* v) {

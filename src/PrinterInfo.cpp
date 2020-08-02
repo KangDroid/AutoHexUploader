@@ -115,7 +115,7 @@ bool PrinterInfo::upload_printer()  {
     wrm.callRequest(__LINE__, __func__, output, command);
 
     // Unzip it
-    command = "unzip /tmp/arduino.zip -d /tmp/arduino";
+    command = "unzip -q /tmp/arduino.zip -d /tmp/arduino";
     wrm.callRequest(__LINE__, __func__, output, command);
 
     // Find avrdude.conf

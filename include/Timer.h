@@ -1,6 +1,7 @@
 #include <iostream>
 #include <ctime>
 #include <queue>
+#include <unistd.h>
 
 #include "BasicVariableInfo.h"
 #include "Logger.h"
@@ -26,7 +27,7 @@ public:
     void get_current_time_var(int& year, int& month, int& day, int& hour, int& min);
 
     // returns base time in varialbe type
-    void timestamp_to_var(time_t timestamp, int& year, int& month, int& day, int& hour);
+    void timestamp_to_var(time_t timestamp, int& year, int& month, int& day, int& hour, int& min);
 
     // Create timestamp from human readable date
     time_t dateToStamp(int year, int month, int day, int hour, int min);
@@ -36,4 +37,7 @@ public:
 
     // Show pushed schedule
     void show_schedule();
+
+    // sleep for desired seconds
+    void sleep_des();
 };
