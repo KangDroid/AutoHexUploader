@@ -14,6 +14,9 @@ void ArgumentParser::call_error(const int errcode) {
         case ERR_UNKNOWN_ARGS:
             cout << "Invalid argument detected.\nPlease check argument." << endl;
         break;
+        case ERR_WEB_INFO_ARGS:
+            cout << "Invalid argument on --web_info\nPlease provide appropriate FULL path to file." << endl;
+        break;
     }
 }
 
@@ -26,25 +29,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
     LOG_V("Argument Count: " + to_string(argc) + "\n" + "Arguments: " + tmp_logger);
     // Parse function
     for (int i = 1; i < argc; i++) {
-        if (!strcmp(argv[i], "--printer_type")) {
-            if (i < argc-1) {
-                i++;
-            } else {
-                call_error(ERR_PRINTER_TYPE_ARGS);
-                LOG_E("Value is not specified for --printer_type");
-                return false;
-            }
-            
-            if (!strcmp(argv[i], "SlideFast") || !strcmp(argv[i], "CoreM") || !strcmp(argv[i], "CoreM_Multi") || !strcmp(argv[i], "Lugo")) {
-                shared_variable->printer_type = string(argv[i]);
-                shared_variable->is_used[0] = true; // mark used
-            } else {
-                // ERROR - not supported argument
-                call_error(ERR_PRINTER_TYPE_ARGS);
-                LOG_E("Invalid Argument Detected: " + string(argv[i]));
-                return false;
-            }
-        } else if (!strcmp(argv[i], "--duration")) {
+        if (!strcmp(argv[i], "--duration")) {
             if (i < argc-1) {
                 i++;
             } else {
@@ -101,25 +86,78 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                 // set it
                 shared_variable->duration = dur_specifier;
                 shared_variable->duration_number = converted_number;
-                shared_variable->is_used[1] = true;
+                shared_variable->is_used[0] = true;
             } else {
                 call_error(ERR_DURATION_ARGS);
                 LOG_E("Duration: Specifier not found: " + argv_to_string);
                 return false;
             }
-        } else if (!strcmp(argv[i], "--force")) {
+        } else if (!strcmp(argv[i], "--web_info")) {
             if (i < argc-1) {
                 i++;
             } else {
-                call_error(ERR_FORCE_ARGS);
-                LOG_E("Value is not specified for --force");
+                call_error(ERR_WEB_INFO_ARGS);
+                LOG_E("Error on web info argument: " + string(argv[i]));
+                return false;
+            }
+            string tmp_store = string(argv[i]);
+            if (!filesystem::exists(tmp_store)) {
+                // File does not exists
+                LOG_E("Specified file does not exists!\nSpecified File Path: " + tmp_store);
                 return false;
             }
 
-            if (!strcmp(argv[i], "0") || !strcmp(argv[i], "1")) {
-                shared_variable->is_force = atoi(argv[i]);
-                shared_variable->is_used[2] = true;
+            // Parse it
+            ifstream input_stream(tmp_store);
+            Json::Value main_json;
+            Json::Reader tmp_reader;
+            if (!tmp_reader.parse(input_stream, main_json)) {
+                // error
+                LOG_E("Cannot parse json file, Please see detailed information: \n" + tmp_reader.getFormattedErrorMessages());
+                return false;
             }
+
+            // For now, support single one.
+            Json::Value cur_printer = main_json[0];
+
+            // Printer Type
+            string printer_type_tmp = cur_printer["printer_type"].asString();
+            if (printer_type_tmp != "CoreM" && printer_type_tmp != "SlideFast" && printer_type_tmp != "CoreM_Multi" && printer_type_tmp != "Lugo") {
+                // Error - not supported
+                LOG_E("Unsupported printer type detected, specified printer was: " + printer_type_tmp);
+                return false;
+            }
+            shared_variable->printer_type = printer_type_tmp;
+
+            // ApiKey
+            string apikey = cur_printer["api_key"].asString();
+            if (apikey.length() != 32) {
+                // Something happened with apkey
+                LOG_E("!!!APIKEY MUST BE 32-BIT LENGTH!!!");
+                LOG_E("SOMEONE MIGHT MANIPULATED PROGRAM!");
+                LOG_E("ABORTING PROGRAM TO PROTECT OVERALL SYSTEM!!!");
+                LOG_E("Specified Apikey: " + apikey);
+                LOG_E("Apikey Length: " + to_string(apikey.length()));
+                return false;
+            }
+            
+            // URL
+            string url = cur_printer["main_url"].asString();
+            if (url.find("http") == string::npos) {
+                // HTTP Protocol not found.
+                LOG_E("Something wrong about main_url, It usally happens when main_url its syntax is wrong.");
+                LOG_E("Specified URL: " + url);
+                return false;
+            }
+
+            // PORT
+            string port = to_string(cur_printer["port"].asInt());
+
+            // force - skip for now.
+
+            // Set printer information
+            printer_info->set_command_info(url, apikey, port);
+            shared_variable->is_used[1] = true;
         } else {
             // Need to handle "Unknown args"
             call_error(ERR_UNKNOWN_ARGS);
@@ -140,6 +178,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
     }
 }
 
-ArgumentParser::ArgumentParser(BasicVariableInfo* b) {
+ArgumentParser::ArgumentParser(BasicVariableInfo* b, PrinterInfo* p) {
     this->shared_variable = b;
+    this->printer_info = p;
 }

@@ -8,7 +8,7 @@
 #include "PrinterInfo.h"
 #include "GithubRequestManager.h"
 
-#define ARGS_COUNT 3
+#define ARGS_COUNT 2
 
 using namespace std;
 
@@ -20,8 +20,8 @@ int main(int argc, char** argv) {
     }
     BasicVariableInfo bvi;
     Timer schedule_timer(&bvi);
-    ArgumentParser parser(&bvi);
     PrinterInfo printer_info;
+    ArgumentParser parser(&bvi, &printer_info);
     GithubRequestManager grm(&bvi);
 
     bool is_parsed = parser.parser_args(argc, argv);

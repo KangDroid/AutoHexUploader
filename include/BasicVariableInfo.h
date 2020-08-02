@@ -2,17 +2,22 @@
 #define __BASICVARIABLEINFO_H__
 
 #include <iostream>
+#include <cpprest/http_client.h>
+#include <json/json.h>
 
-#define ARGS_COUNT 3
+#define ARGS_COUNT 2
 
 using namespace std;
 
 class BasicVariableInfo {
+private:
+    bool parse_web_info();
 public:
     string printer_type;
     string duration;
     int duration_number;
     bool is_force;
+    string web_info_file;
     /**
      * idx --> represents argument
      * 0 --> --printer_type

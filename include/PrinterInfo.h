@@ -1,3 +1,6 @@
+#ifndef __PRINTERINFO_H__
+#define __PRINTERINFO_H__
+
 #include <iostream>
 #include <unistd.h>
 #include "WebRequestManager.h"
@@ -35,4 +38,6 @@ public:
     bool getisPrinting();
     bool reconnect_server();
     void cleanup();
+    void set_command_info(string& u, string& a, string& wp);
 };
+#endif // __PRINTERINFO_H__

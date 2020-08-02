@@ -5,4 +5,5 @@
 #define ERR_DURATION_ARGS -2
 #define ERR_FORCE_ARGS -3
 #define ERR_UNKNOWN_ARGS -4
+#define ERR_WEB_INFO_ARGS -5
 #endif // __ERRORCODE_H__

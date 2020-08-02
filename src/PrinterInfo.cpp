@@ -195,6 +195,12 @@ void PrinterInfo::cleanup() {
     #endif
 }
 
+void PrinterInfo::set_command_info(string& u, string& a, string& wp) {
+    this->url = u;
+    this->apikey = a;
+    this->web_port = wp;
+}
+
 PrinterInfo::PrinterInfo() {
     this->apikey = "F43FAA8F2FB54AE998A42737D40CADE7";
     this->url = "http://localhost";
