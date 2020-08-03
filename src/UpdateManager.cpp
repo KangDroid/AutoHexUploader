@@ -22,10 +22,11 @@ void UpdateManager::backup_timer() {
     to_backup["Timer"]["duration_string"] = duration_string;
 
     int queue_size = queue_backup.size();
+    queue<time_t> tmp_q(queue_backup);
     for (int i = 0; i < queue_size; i++) {
-        int time_val = queue_backup.front();
+        int time_val = tmp_q.front();
         to_backup["Timer"]["time_info"][i] = time_val;
-        queue_backup.pop();
+        tmp_q.pop();
     }
 }
 

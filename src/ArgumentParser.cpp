@@ -28,7 +28,7 @@ void ArgumentParser::setprt_count(int ctr) {
     this->prt_count = ctr;
 }
 
-bool ArgumentParser::parser_args(int argc, char** argv) {
+int ArgumentParser::parser_args(int argc, char** argv) {
     string function_code = string(__func__);
     string tmp_logger = "";
     for (int i = 0; i < argc; i++) {
@@ -43,7 +43,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
             } else {
                 call_error(ERR_DURATION_ARGS);
                 LOG_E("Value is not specified for --duration");
-                return false;
+                return -1;
             }
             string number;
             string dur_specifier;
@@ -57,14 +57,14 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                 if (number.length() > 3) {
                     call_error(ERR_DURATION_ARGS);
                     LOG_E("Duration: Number should be between 0 ~ 999, input was: " + number);
-                    return false;
+                    return -1;
                 }
 
                 // Check prefix 0
                 if (number.at(0) == '0') {
                     call_error(ERR_DURATION_ARGS);
                     LOG_E("Duration: Prefix 0 is not supported");
-                    return false;
+                    return -1;
                 }
 
                 // Check whether this number is actual integer.
@@ -75,20 +75,20 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                     // Cannot parse as int
                     call_error(ERR_DURATION_ARGS);
                     LOG_E("Duration: Cannot convert number: " + number);
-                    return false;
+                    return -1;
                 }
 
                 if (converted_number < 1 || converted_number > 999) {
                     call_error(ERR_DURATION_ARGS);
                     LOG_E("Duration: Number should be between 0 ~ 999, input was: " + number);
-                    return false;
+                    return -1;
                 }
 
                 // Check duration
                 if (dur_specifier != "hour" && dur_specifier != "month" && dur_specifier != "week" && dur_specifier != "day" && dur_specifier != "minute")  {
                     call_error(ERR_DURATION_ARGS);
                     LOG_E("Duration: Unsupported duration: " + dur_specifier);
-                    return false;
+                    return -1;
                 }
 
                 // set it
@@ -98,7 +98,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
             } else {
                 call_error(ERR_DURATION_ARGS);
                 LOG_E("Duration: Specifier not found: " + argv_to_string);
-                return false;
+                return -1;
             }
         } else if (!strcmp(argv[i], "--web_info")) {
             if (i < argc-1) {
@@ -106,13 +106,13 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
             } else {
                 call_error(ERR_WEB_INFO_ARGS);
                 LOG_E("Error on web info argument: " + string(argv[i]));
-                return false;
+                return -1;
             }
             string tmp_store = string(argv[i]);
             if (!filesystem::exists(tmp_store)) {
                 // File does not exists
                 LOG_E("Specified file does not exists!\nSpecified File Path: " + tmp_store);
-                return false;
+                return -1;
             }
 
             // Parse it
@@ -122,7 +122,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
             if (!tmp_reader.parse(input_stream, main_json)) {
                 // error
                 LOG_E("Cannot parse json file, Please see detailed information: \n" + tmp_reader.getFormattedErrorMessages());
-                return false;
+                return -1;
             }
 
             // For now, support single one.
@@ -137,7 +137,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                 if (printer_type_tmp != "CoreM" && printer_type_tmp != "SlideFast" && printer_type_tmp != "CoreM_Multi" && printer_type_tmp != "Lugo") {
                     // Error - not supported
                     LOG_E("Unsupported printer type detected, specified printer was: " + printer_type_tmp);
-                    return false;
+                    return -1;
                 }
 
                 // ApiKey
@@ -149,7 +149,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                     LOG_E("ABORTING PROGRAM TO PROTECT OVERALL SYSTEM!!!");
                     LOG_E("Specified Apikey: " + apikey);
                     LOG_E("Apikey Length: " + to_string(apikey.length()));
-                    return false;
+                    return -1;
                 }
                 
                 // URL
@@ -158,7 +158,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                     // HTTP Protocol not found.
                     LOG_E("Something wrong about main_url, It usally happens when main_url its syntax is wrong.");
                     LOG_E("Specified URL: " + url);
-                    return false;
+                    return -1;
                 }
 
                 // PORT
@@ -171,23 +171,26 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                 (*printer_info)[i].set_printer_type(printer_type_tmp);
             }
             shared_variable->is_used[1] = true;
+        } else if (!strcmp(argv[i], "--update")) {
+            // Update detected.
+            return 0;
         } else {
             // Need to handle "Unknown args"
             call_error(ERR_UNKNOWN_ARGS);
             LOG_E("Unknown Argument Detected" + string(argv[i]));
-            return false;
+            return -1;
         }
     }
     // Check whether all arguments are used
     if (shared_variable->isFullused()) {
         // All arguments are used
         LOG_V("Successfully initiated arguments.");
-        return true;
+        return 1;
     } else {
         // Maybe not all argumente are not used.
         cout << "All arguments are needed, supported arguments are: --printer_type, --duration, --force" << endl;
         LOG_E("Arguments are NOT used at all");
-        return false;
+        return -1;
     }
 }
 

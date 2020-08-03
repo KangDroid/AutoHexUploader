@@ -17,7 +17,7 @@ private:
 public:
     ArgumentParser(BasicVariableInfo* b, PrinterInfo** p);
     //~ArgumentParser();
-    bool parser_args(int argc, char** argv);
+    int parser_args(int argc, char** argv);
     void call_error(const int errcode);
     int getPrinterCount();
     void setprt_count(int ctr);

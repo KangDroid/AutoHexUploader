@@ -26,8 +26,13 @@ int main(int argc, char** argv) {
     GithubRequestManager grm(&printer_info);
     UpdateManager um(&bvi, &schedule_timer, &printer_info, &parser);
 
-    bool is_parsed = parser.parser_args(argc, argv);
-    if (is_parsed) {
+    int is_parsed = parser.parser_args(argc, argv);
+    if (is_parsed == 0) {
+        // Updated. Need to restore bunch of information and continue.
+        um.restore_total();
+        schedule_timer.sleep_des();
+    }
+    if (is_parsed >= 0) {
         // Set Next Schedule
         schedule_timer.set_schedule();
         um.backup_total();

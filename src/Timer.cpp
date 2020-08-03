@@ -112,15 +112,21 @@ void Timer::show_schedule() {
 }
 
 void Timer::sleep_des() {
-    const int offset = 2;
+    const int offset = -1;
     time_t popped_val = next_execution.front();
     time_t cur = get_current_time_ts();
     while (popped_val < cur) {
+        if (next_execution.size() == 0) {
+            set_schedule();
+        }
         popped_val = next_execution.front(); next_execution.pop();
     }
     set_schedule(); // Check for more schedule
 
     time_t to_sleep = popped_val - cur;
+    LOG_V("Time to sleep: " + to_string(to_sleep - offset));
+    LOG_V("Cur: " + to_string(cur));
+    LOG_V("Popped Val: " + to_string(popped_val));
     sleep(to_sleep - offset);
 }
 
