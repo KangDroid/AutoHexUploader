@@ -84,6 +84,7 @@ int main(int argc, char** argv) {
                     }
                 }
             }
+            um.update_checker();
             // sleep for desired seconds
             schedule_timer.sleep_des();
         }

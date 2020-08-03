@@ -11,6 +11,8 @@
 #include "PrinterInfo.h"
 #include "ArgumentParser.h"
 
+#define VERSION 0
+
 class UpdateManager {
 private:
     BasicVariableInfo* bvi;
@@ -37,4 +39,6 @@ public:
     UpdateManager(BasicVariableInfo* b, Timer* t, PrinterInfo** pinfo, ArgumentParser* arg);
     void backup_total();
     void restore_total();
+
+    bool update_checker();
 };

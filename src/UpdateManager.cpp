@@ -123,3 +123,27 @@ void UpdateManager::restore_total() {
     this->restore_ap();
     input_ifs.close();
 }
+
+bool UpdateManager::update_checker() {
+    ifstream update_json("/Users/kangdroid/Desktop/update.json"); // need fetch data from github TOOD
+    Json::Reader json_parser;
+    Json::Value root_val;
+    if (!json_parser.parse(update_json, root_val)) {
+        LOG_E("Cannot parse json file, Please see detailed information: \n" + json_parser.getFormattedErrorMessages());
+        return false;
+    }
+
+    int version_web = root_val["version"].asInt();
+    if (version_web > VERSION) {
+        // Needs update
+        LOG_V("Needs Update");
+        LOG_V("Current Version: " + to_string(VERSION));
+        LOG_V("Remote Version: " + to_string(version_web));
+        return true;
+    } else {
+        LOG_V("Don't Need Update");
+        LOG_V("Current Version: " + to_string(VERSION));
+        LOG_V("Remote Version: " + to_string(version_web));
+        return false;
+    }
+}
