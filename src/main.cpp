@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
     Timer schedule_timer(&bvi);
     PrinterInfo* printer_info = nullptr;
     ArgumentParser parser(&bvi, &printer_info);
-    GithubRequestManager grm(&bvi);
+    GithubRequestManager grm(&printer_info);
     UpdateManager um(&bvi, &schedule_timer, &printer_info, &parser);
 
     bool is_parsed = parser.parser_args(argc, argv);
@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
                             cout << "Cannot get printing information from local octoprint server" << endl;
                         } else {
                             // Get hex file from github
-                            bool succ = grm.download_hex();
+                            bool succ = grm.download_hex(i);
                             if (!succ) {
                                 // Download or build failed
                                 return -1;

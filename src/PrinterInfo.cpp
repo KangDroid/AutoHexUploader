@@ -197,6 +197,14 @@ void PrinterInfo::cleanup() {
     #endif
 }
 
+void PrinterInfo::set_printer_type(string info) {
+    this->printer_type = info;
+}
+
+string PrinterInfo::get_printer_type() {
+    return this->printer_type;
+}
+
 void PrinterInfo::set_command_info(string& u, string& a, string& wp) {
     this->url = u;
     this->apikey = a;

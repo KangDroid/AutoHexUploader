@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include "json/json.h"
 #include "WebRequestManager.h"
-#include "BasicVariableInfo.h"
+#include "PrinterInfo.h"
 #include "Logger.h"
 
 using namespace std;
@@ -15,7 +15,7 @@ private:
     string save_directory = "/tmp/tmp.zip";
     string file_store = "/tmp/CompiledHex.hex";
     WebRequestManager wrm;
-    BasicVariableInfo* bvi;
+    PrinterInfo** pi;
 
     /**
      * Check whether release exists
@@ -28,14 +28,14 @@ private:
      */
     bool build_hex();
 public:
-    GithubRequestManager(BasicVariableInfo* b) {
-        this->bvi = b;
+    GithubRequestManager(PrinterInfo** b) {
+        this->pi = b;
     }
 
     /**
      * Download hex file from github
      */
-    bool download_hex();
+    bool download_hex(int idx);
 
     // Remove file
     void cleanup();

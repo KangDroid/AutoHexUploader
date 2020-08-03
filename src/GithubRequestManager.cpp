@@ -38,7 +38,7 @@ bool GithubRequestManager::checkRelease() {
     return true;
 }
 
-bool GithubRequestManager::download_hex() {
+bool GithubRequestManager::download_hex(int idx) {
     string func_code = string(__func__);
     LOG_V("Entered.");
     // Call CheckRelease for connectivity and availability
@@ -76,7 +76,7 @@ bool GithubRequestManager::download_hex() {
     wrm.callRequest(__LINE__, __func__, output, command);
 
     // Move it!
-    command = "mv /tmp/tmp/" + bvi->printer_type + "*.hex " + file_store;
+    command = "mv /tmp/tmp/" + (*pi)[idx].get_printer_type() + "*.hex " + file_store;
     wrm.callRequest(__LINE__, __func__, output, command);
 
     LOG_V("Successfully downloaded hex file.");

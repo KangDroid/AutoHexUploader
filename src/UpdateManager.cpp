@@ -1,7 +1,6 @@
 #include "UpdateManager.h"
 void UpdateManager::backup_bvi() {
     LOG_V("Backing up BasicVariableInformation...");
-    to_backup["BasicVariableInformation"]["printer_type"] = bvi->printer_type;
     to_backup["BasicVariableInformation"]["duration"] = bvi->duration;
     to_backup["BasicVariableInformation"]["duration_number"] = bvi->duration_number;
     to_backup["BasicVariableInformation"]["is_force"] = bvi->is_force;
@@ -39,6 +38,7 @@ void UpdateManager::backup_printer_info() {
         to_backup["PrinterInfo"][i]["url"] = url;
         to_backup["PrinterInfo"][i]["apikey"] = api;
         to_backup["PrinterInfo"][i]["web_port"] = wp;
+        to_backup["PrinterInfo"][i]["printer_type"] = (*pi)[i].get_printer_type();
     }
 }
 
@@ -49,7 +49,6 @@ void UpdateManager::backup_ap() {
 
 void UpdateManager::restore_bvi() {
     LOG_V("Restoring BasicVariableInfo");
-    bvi->printer_type = (to_backup["BasicVariableInformation"]["printer_type"]).asString();
     bvi->duration = (to_backup["BasicVariableInformation"]["duration"]).asString();
     bvi->duration_number = (to_backup["BasicVariableInformation"]["duration_number"]).asInt();
     bvi->is_force = (to_backup["BasicVariableInformation"]["is_force"]).asBool();
@@ -76,7 +75,9 @@ void UpdateManager::restore_printer_info() {
         string url = to_backup["PrinterInfo"][i]["url"].asString();
         string api = to_backup["PrinterInfo"][i]["apikey"].asString();
         string wp = to_backup["PrinterInfo"][i]["web_port"].asString();
+        string printer_type = to_backup["PrinterInfo"][i]["printer_type"].asString();
         (*pi)[i].set_command_info(url, api, wp);
+        (*pi)[i].set_printer_type(printer_type);
     }
 }
 

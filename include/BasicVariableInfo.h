@@ -13,7 +13,6 @@ class BasicVariableInfo {
 private:
     bool parse_web_info();
 public:
-    string printer_type;
     string duration;
     int duration_number;
     bool is_force;

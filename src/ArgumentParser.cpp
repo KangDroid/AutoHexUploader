@@ -139,7 +139,6 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
                     LOG_E("Unsupported printer type detected, specified printer was: " + printer_type_tmp);
                     return false;
                 }
-                shared_variable->printer_type = printer_type_tmp;
 
                 // ApiKey
                 string apikey = cur_printer["api_key"].asString();
@@ -169,6 +168,7 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
 
                 // Set printer information
                 (*printer_info)[i].set_command_info(url, apikey, port);
+                (*printer_info)[i].set_printer_type(printer_type_tmp);
             }
             shared_variable->is_used[1] = true;
         } else {
