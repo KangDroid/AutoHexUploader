@@ -39,5 +39,7 @@ public:
     bool reconnect_server();
     void cleanup();
     void set_command_info(string& u, string& a, string& wp);
+
+    void get_command_info(string& url, string& api, string& web_port);
 };
 #endif // __PRINTERINFO_H__

@@ -203,6 +203,12 @@ void PrinterInfo::set_command_info(string& u, string& a, string& wp) {
     this->web_port = wp;
 }
 
+void PrinterInfo::get_command_info(string& url_inc, string& api, string& web_port_inc) {
+    url_inc = this->url;
+    api = this->apikey;
+    web_port_inc = this->web_port;
+}
+
 PrinterInfo::PrinterInfo() {
     this->apikey = "F43FAA8F2FB54AE998A42737D40CADE7";
     this->url = "http://localhost";

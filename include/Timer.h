@@ -1,3 +1,6 @@
+#ifndef __TIMER_H__
+#define __TIMER_H__
+
 #include <iostream>
 #include <ctime>
 #include <queue>
@@ -40,4 +43,8 @@ public:
 
     // sleep for desired seconds
     void sleep_des();
+
+    void get_backup_info(int& year, int& month, int& day, int& hour, int& min, string& duration, queue<time_t>& tmp_queue);
+    void restore_info(int year, int month, int day, int hour, int min, string duration, queue<time_t>& queue_restore);
 };
+#endif // __TIMER_H__

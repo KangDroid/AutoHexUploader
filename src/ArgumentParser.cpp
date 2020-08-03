@@ -24,6 +24,10 @@ int ArgumentParser::getPrinterCount() {
     return this->prt_count;
 }
 
+void ArgumentParser::setprt_count(int ctr) {
+    this->prt_count = ctr;
+}
+
 bool ArgumentParser::parser_args(int argc, char** argv) {
     string function_code = string(__func__);
     string tmp_logger = "";

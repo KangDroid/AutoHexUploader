@@ -16,7 +16,7 @@ set(CMAKE_CXX_FLAGS "-Wall -O3 -std=gnu++2a -Wno-deprecated-declarations -Wno-un
 
 include_directories(${AutoHexProject_SOURCE_DIR}/include)
 include_directories(/usr/local/include)
-ADD_EXECUTABLE( app.out src/main.cpp src/ArgumentParser.cpp src/BasicVariableInfo.cpp src/GithubRequestManager.cpp src/Logger.cpp src/PrinterInfo.cpp src/Timer.cpp src/WebRequestManager.cpp src/jsoncpp.cpp )
+ADD_EXECUTABLE( app.out src/main.cpp src/ArgumentParser.cpp src/BasicVariableInfo.cpp src/GithubRequestManager.cpp src/Logger.cpp src/PrinterInfo.cpp src/Timer.cpp src/WebRequestManager.cpp src/jsoncpp.cpp  src/UpdateManager.cpp )
 if (APPLE)
 TARGET_LINK_LIBRARIES( app.out PRIVATE cpprestsdk::cpprest OpenSSL::SSL Boost::system OpenSSL::Crypto)
 else()

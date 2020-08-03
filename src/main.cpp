@@ -7,6 +7,7 @@
 #include "Timer.h"
 #include "PrinterInfo.h"
 #include "GithubRequestManager.h"
+#include "UpdateManager.h"
 
 #define ARGS_COUNT 2
 
@@ -23,11 +24,13 @@ int main(int argc, char** argv) {
     PrinterInfo* printer_info = nullptr;
     ArgumentParser parser(&bvi, &printer_info);
     GithubRequestManager grm(&bvi);
+    UpdateManager um(&bvi, &schedule_timer, &printer_info, &parser);
 
     bool is_parsed = parser.parser_args(argc, argv);
     if (is_parsed) {
         // Set Next Schedule
         schedule_timer.set_schedule();
+        um.backup_total();
 
         while(true) {
             int printer_ctr = parser.getPrinterCount();

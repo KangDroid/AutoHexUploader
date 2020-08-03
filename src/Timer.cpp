@@ -124,6 +124,26 @@ void Timer::sleep_des() {
     sleep(to_sleep - offset);
 }
 
+void Timer::get_backup_info(int& year, int& month, int& day, int& hour, int& min, string& duration, queue<time_t>& tmp_queue) {
+    year = year_ref;
+    month = month_ref;
+    day = day_ref;
+    hour = hour_ref;
+    min = min_ref;
+    duration = duration_string;
+    tmp_queue = this->next_execution;
+}
+
+void Timer::restore_info(int year, int month, int day, int hour, int min, string duration, queue<time_t>& queue_restore) {
+    this->year_ref = year;
+    this->month_ref = month;
+    this->day_ref = day;
+    this->hour_ref = hour;
+    this->min_ref = min;
+    this->duration_string = duration;
+    this->next_execution = queue_restore;
+}
+
 Timer::Timer(BasicVariableInfo* v) {
     this->shared_var = v;
     get_current_time_var(this->year_ref, this->month_ref, this->day_ref, this->hour_ref, this->min_ref);
