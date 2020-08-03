@@ -84,7 +84,21 @@ int main(int argc, char** argv) {
                     }
                 }
             }
-            um.update_checker();
+            if (um.update_checker()) {
+                // Needs update
+                string output;
+                WebRequestManager wrm;
+                wrm.callRequest(__LINE__, __func__, output, "/Users/kangdroid/autohexuploader/assets/build_ahx.sh");
+                if (!filesystem::exists("/Users/kangdroid/autohexuploader/bin/app.out")) {
+                    LOG_E("Error building/Updating files");
+                } else {
+                    // Back up latest info
+                    um.backup_total();
+                    char *const argv[] = {"/Users/kangdroid/autohexuploader/bin/app.out", "--update", NULL};
+                    execv(argv[0], argv);
+                    LOG_E("Error executing new program");
+                }
+            }
             // sleep for desired seconds
             schedule_timer.sleep_des();
         }
