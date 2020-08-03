@@ -4,6 +4,7 @@ project(AutoHexProject)
 if (APPLE)
     set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl")
     set(OPENSSL_LIBRARIES "/usr/local/opt/openssl/lib")
+    set(CMAKE_INSTALL_PREFIX "/Users/kangdroid/autohexuploader")
 else()
     set(cpprestsdk_DIR /usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/cmake/)
 endif()
@@ -22,3 +23,7 @@ TARGET_LINK_LIBRARIES( app.out PRIVATE cpprestsdk::cpprest OpenSSL::SSL Boost::s
 else()
 TARGET_LINK_LIBRARIES( app.out PRIVATE cpprestsdk::cpprest OpenSSL::SSL Boost::system OpenSSL::Crypto stdc++fs)
 endif()
+
+install(TARGETS app.out
+        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(FILES assets/build_ahx_rpi.sh assets/build_ahx.sh DESTINATION ${CMAKE_INSTALL_PREFIX}/assets )

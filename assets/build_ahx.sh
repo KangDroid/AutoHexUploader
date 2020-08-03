@@ -12,3 +12,5 @@ cd build
 cmake ..
 make -j12
 make -j2 install
+cd /
+rm -rf $MAIN_WORKING_DIR
