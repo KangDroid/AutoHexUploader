@@ -88,14 +88,24 @@ int main(int argc, char** argv) {
                 // Needs update
                 string output;
                 WebRequestManager wrm;
-                wrm.callRequest(__LINE__, __func__, output, "/Users/kangdroid/autohexuploader/assets/build_ahx.sh");
-                if (!filesystem::exists("/Users/kangdroid/autohexuploader/bin/app.out")) {
+                #if defined(__APPLE__)
+                string script_file = "/Users/kangdroid/autohexuploader/assets/build_ahx.sh";
+                string output_file = "/Users/kangdroid/autohexuploader/bin/app.out";
+                char *const argv_execl[] = {"/Users/kangdroid/autohexuploader/bin/app.out", "--update", NULL};
+                #else
+                string script_file = "/home/pi/autohexuploader/assets/build_ahx.sh";
+                string output_file = "/home/pi/autohexuploader/bin/app.out"
+                char *const argv_execl[] = {"/home/pi/autohexuploader/bin/app.out", "--update", NULL};
+                #endif
+                
+                wrm.callRequest(__LINE__, __func__, output, script_file);
+                if (!filesystem::exists(output_file)) {
                     LOG_E("Error building/Updating files");
                 } else {
                     // Back up latest info
                     um.backup_total();
-                    char *const argv[] = {"/Users/kangdroid/autohexuploader/bin/app.out", "--update", NULL};
-                    execv(argv[0], argv);
+                    
+                    execv(argv_execl[0], argv_execl);
                     LOG_E("Error executing new program");
                 }
             }
