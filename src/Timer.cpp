@@ -146,6 +146,7 @@ void Timer::restore_info(int year, int month, int day, int hour, int min, string
 
 Timer::Timer(BasicVariableInfo* v) {
     this->shared_var = v;
+    this->duration_string = shared_var->duration;
     get_current_time_var(this->year_ref, this->month_ref, this->day_ref, this->hour_ref, this->min_ref);
     LOG_V("Reference Time[Timer First Call]: " + to_string(year_ref)+ "-" + to_string(month_ref) + "-" + to_string(day_ref) + ", at: " + to_string(hour_ref) + ":" + to_string(min_ref));
 }
