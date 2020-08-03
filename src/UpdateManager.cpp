@@ -126,9 +126,13 @@ void UpdateManager::restore_total() {
 
 bool UpdateManager::update_checker() {
     ifstream update_json("/Users/kangdroid/Desktop/update.json"); // need fetch data from github TOOD
+    string command = "curl https://raw.githubusercontent.com/KangDroid/AutoHexUploader/master/update_info.json";
+    string output;
+    WebRequestManager wrm;
+    wrm.callRequest(__LINE__, __func__, output, command);
     Json::Reader json_parser;
     Json::Value root_val;
-    if (!json_parser.parse(update_json, root_val)) {
+    if (!json_parser.parse(output, root_val)) {
         LOG_E("Cannot parse json file, Please see detailed information: \n" + json_parser.getFormattedErrorMessages());
         return false;
     }
