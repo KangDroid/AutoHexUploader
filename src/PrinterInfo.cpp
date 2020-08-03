@@ -1,7 +1,7 @@
 #include "PrinterInfo.h"
 bool PrinterInfo::checkPrintingStatus() {
     LOG_V("Entered.");
-    string output = CALL_REST_OCTO("GET", url + ":" + web_port + "/api/printer", apikey);
+    string output = CALL_REST_OCTO("GET", url[current_printer_idx] + ":" + web_port[current_printer_idx] + "/api/printer", apikey[current_printer_idx]);
     Json::Value main_json;
     Json::Reader tmp_reader;
     if (!tmp_reader.parse(output, main_json, false)) {
@@ -15,9 +15,9 @@ bool PrinterInfo::checkPrintingStatus() {
         Json::Value tmp_val = main_json["state"]["flags"];
         if (tmp_val["printing"].asString() == "true") {
             // It is printing
-            this->is_printing = true;
+            this->is_printing[current_printer_idx] = true;
         } else if (tmp_val["printing"].asString() == "false") {
-            this->is_printing = false;
+            this->is_printing[current_printer_idx] = false;
         } else {
             // Error
             LOG_E("Json is parsed, but cannot get property values.");
@@ -31,7 +31,7 @@ bool PrinterInfo::checkPrintingStatus() {
 bool PrinterInfo::backupConnectionInfo() {
     string func_code = string(__func__);
     LOG_V("Entered.");
-    string output = CALL_REST_OCTO("GET", url + ":" + web_port + "/api/connection", apikey);
+    string output = CALL_REST_OCTO("GET", url[current_printer_idx] + ":" + web_port[current_printer_idx] + "/api/connection", apikey[current_printer_idx]);
     Json::Value main_json;
     Json::Reader tmp_reader;
     if (!tmp_reader.parse(output, main_json, false)) {
@@ -49,9 +49,9 @@ bool PrinterInfo::backupConnectionInfo() {
             LOG_E("Printer seems like isn't connected to octoprinter");
             return false;
         }
-        this->baudrate = tmp_val["baudrate"].asString();
-        this->port = tmp_val["port"].asString();
-        this->profile_name = tmp_val["printerProfile"].asString();
+        this->baudrate[current_printer_idx] = tmp_val["baudrate"].asString();
+        this->port[current_printer_idx] = tmp_val["port"].asString();
+        this->profile_name[current_printer_idx] = tmp_val["printerProfile"].asString();
     }
     LOG_V("Successfully finished backing up information.");
     return true;
@@ -67,8 +67,8 @@ void PrinterInfo::printAllInfo() {
 bool PrinterInfo::disconnect_server() {
     string func_code = string(__func__);
     LOG_V("Entered.");
-    CALL_REST_OCTO_DISCONNECT(url + ":" + web_port + "/api/connection", apikey);
-    string output = CALL_REST_OCTO("GET", url + ":" + web_port + "/api/connection", apikey);
+    CALL_REST_OCTO_DISCONNECT(url[current_printer_idx] + ":" + web_port[current_printer_idx] + "/api/connection", apikey[current_printer_idx]);
+    string output = CALL_REST_OCTO("GET", url[current_printer_idx] + ":" + web_port[current_printer_idx] + "/api/connection", apikey[current_printer_idx]);
 
     Json::Value main_json;
     Json::Reader tmp_reader;
@@ -121,7 +121,7 @@ bool PrinterInfo::upload_printer()  {
     // Find avrdude.conf
     string avrdude_configuration = "/tmp/arduino/Arduino.app/Contents/Java/hardware/tools/avr/etc/avrdude.conf";
     string avrdude_binary = "/tmp/arduino/Arduino.app/Contents/Java/hardware/tools/avr/bin/avrdude";
-    string command_upload = "\"" + avrdude_binary + "\" -D -C\"" + avrdude_configuration +"\" -patmega2560 -P" + this->port + " -cwiring -b115200 -Uflash:w:" + to_upload + " 2>&1";
+    string command_upload = "\"" + avrdude_binary + "\" -D -C\"" + avrdude_configuration +"\" -patmega2560 -P" + this->port[current_printer_idx] + " -cwiring -b115200 -Uflash:w:" + to_upload + " 2>&1";
     wrm.callRequest(__LINE__, __func__, output, command_upload);
     #else
     // ARM-Raspberry Pi
@@ -157,11 +157,11 @@ bool PrinterInfo::reconnect_server() {
     LOG_V("Entered.");
 
     // Issue Connection Request on Local Server
-    CALL_REST_OCTO_CONNECT(url + ":" + web_port + "/api/connection", apikey, port, baudrate, profile_name);
+    CALL_REST_OCTO_CONNECT(url[current_printer_idx] + ":" + web_port[current_printer_idx] + "/api/connection", apikey[current_printer_idx], port[current_printer_idx], baudrate[current_printer_idx], profile_name[current_printer_idx]);
     sleep(10); //Maximum timeout
 
     // Check printer status
-    string output = CALL_REST_OCTO("GET", url + ":" + web_port + "/api/connection", apikey);
+    string output = CALL_REST_OCTO("GET", url[current_printer_idx] + ":" + web_port[current_printer_idx] + "/api/connection", apikey[current_printer_idx]);
 
     Json::Value main_json;
     Json::Reader tmp_reader;
@@ -197,14 +197,62 @@ void PrinterInfo::cleanup() {
     #endif
 }
 
+void PrinterInfo::create_info_dyn(int count) {
+    this->printer_count = count;
+    this->url = new string[count];
+    this->apikey = new string[count];
+    this->web_port = new string[count];
+    this->is_printing = new bool[count];
+    this->baudrate = new string[count];
+    this->port = new string[count];
+    this->profile_name = new string[count];
+}
+
 void PrinterInfo::set_command_info(string& u, string& a, string& wp) {
-    this->url = u;
-    this->apikey = a;
-    this->web_port = wp;
+    url[current_printer_idx] = u;
+    apikey[current_printer_idx] = a;
+    web_port[current_printer_idx] = wp;
+    LOG_V("Set basic information for printer " + to_string(current_printer_idx));
+}
+
+int PrinterInfo::getPrinterCount() {
+    return this->printer_count;
+}
+
+void PrinterInfo::set_current_printer(int idx) {
+    this->current_printer_idx = idx;
 }
 
 PrinterInfo::PrinterInfo() {
-    this->apikey = "F43FAA8F2FB54AE998A42737D40CADE7";
-    this->url = "http://localhost";
-    this->web_port = "5000";
+    current_printer_idx = 0;
+}
+
+PrinterInfo::~PrinterInfo() {
+    if (url != nullptr) {
+        delete[] url;
+    }
+
+    if (apikey != nullptr) {
+        delete[] apikey;
+    }
+
+    if (web_port != nullptr) {
+        delete[] web_port;
+    }
+
+    if (is_printing != nullptr) {
+        delete[] is_printing;
+    }
+
+    if (baudrate != nullptr) {
+        delete[] baudrate;
+    }
+
+    if (port != nullptr) {
+        delete[] port;
+    }
+
+    if (profile_name != nullptr ) {
+        delete[] profile_name;
+    }
 }

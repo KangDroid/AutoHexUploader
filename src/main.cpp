@@ -31,43 +31,47 @@ int main(int argc, char** argv) {
 
         while(true) {
             // Caall Printing Status
-            bool succeed = printer_info.checkPrintingStatus();
-            if (!succeed) {
-                // Network might be failed or whatever.
-                // 5 hour delay
-                cout << "Cannot check printing status" << endl;
-            } else {
-                if (printer_info.getisPrinting()) {
-                    // Printer is using. 5 hour delay needed.
+            for (int i = 0; i < printer_info.getPrinterCount(); i++) {
+                LOG_V("Working for printer: " + to_string(i));
+                printer_info.set_current_printer(i);
+                bool succeed = printer_info.checkPrintingStatus();
+                if (!succeed) {
+                    // Network might be failed or whatever.
+                    // 5 hour delay
+                    cout << "Cannot check printing status" << endl;
                 } else {
-                    // Since printer is not using, so back up current connection settings
-                    bool succeed = printer_info.backupConnectionInfo();
-
-                    if (!succeed) {
-                        // Network might be failed or whatever.
-                        // 5 hour delay!
-                        cout << "Cannot ge t printing information from local octoprint server" << endl;
+                    if (printer_info.getisPrinting()) {
+                        // Printer is using. 5 hour delay needed.
                     } else {
-                        // Get hex file from github
-                        bool succ = grm.download_hex();
-                        if (!succ) {
-                            // Download or build failed
-                            return -1;
-                        }
+                        // Since printer is not using, so back up current connection settings
+                        bool succeed = printer_info.backupConnectionInfo();
 
-                        // upload it
-                        printer_info.upload_printer();
+                        if (!succeed) {
+                            // Network might be failed or whatever.
+                            // 5 hour delay!
+                            cout << "Cannot ge t printing information from local octoprint server" << endl;
+                        } else {
+                            // Get hex file from github
+                            bool succ = grm.download_hex();
+                            if (!succ) {
+                                // Download or build failed
+                                return -1;
+                            }
 
-                        // clean up
-                        grm.cleanup();
-                        printer_info.cleanup();
+                            // upload it
+                            printer_info.upload_printer();
 
-                        // reconnect it
-                        bool success = printer_info.reconnect_server();
-                        if (!success) {
-                            cout << "Error" << endl;
-                            Logger::close_stream();
-                            return -1;
+                            // clean up
+                            grm.cleanup();
+                            printer_info.cleanup();
+
+                            // reconnect it
+                            bool success = printer_info.reconnect_server();
+                            if (!success) {
+                                cout << "Error" << endl;
+                                Logger::close_stream();
+                                return -1;
+                            }
                         }
                     }
                 }
