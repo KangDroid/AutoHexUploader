@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <string>
 
 // Local include
@@ -14,7 +15,13 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-    bool stream_opened = Logger::initiate_stream("test.txt");
+    time_t current_time;
+    time(&current_time);
+    char buffer_tmp[128];
+    strftime(buffer_tmp, sizeof(buffer_tmp), "%Y%m%d-%H%M%S", localtime(&current_time));
+    string file_name(buffer_tmp);
+
+    bool stream_opened = Logger::initiate_stream("LOG_" + file_name + ".log");
     if (!stream_opened) {
         cout << "Error: Logging failed at some reason." << endl;
         cout << "Skipping error logging" << endl;
@@ -104,7 +111,7 @@ int main(int argc, char** argv) {
                 } else {
                     // Back up latest info
                     um.backup_total();
-                    
+                    Logger::close_stream();
                     execv(argv_execl[0], argv_execl);
                     LOG_E("Error executing new program");
                 }
