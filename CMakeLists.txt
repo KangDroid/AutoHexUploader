@@ -26,4 +26,4 @@ endif()
 
 install(TARGETS app.out
         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-install(FILES assets/build_ahx_rpi.sh assets/build_ahx.sh DESTINATION ${CMAKE_INSTALL_PREFIX}/assets )
+install(FILES assets/local_build.sh assets/build_ahx_rpi.sh assets/build_ahx.sh DESTINATION ${CMAKE_INSTALL_PREFIX}/assets )
