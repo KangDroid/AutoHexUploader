@@ -9,9 +9,12 @@
 class ArgumentParser {
 private:
     BasicVariableInfo* shared_variable;
-    PrinterInfo* printer_info;
+    PrinterInfo** printer_info;
+    int prt_count;
 public:
-    ArgumentParser(BasicVariableInfo* b, PrinterInfo* p);
+    ArgumentParser(BasicVariableInfo* b, PrinterInfo** p);
+    //~ArgumentParser();
     bool parser_args(int argc, char** argv);
     void call_error(const int errcode);
+    int getPrinterCount();
 };

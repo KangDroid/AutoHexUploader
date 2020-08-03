@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
     }
     BasicVariableInfo bvi;
     Timer schedule_timer(&bvi);
-    PrinterInfo printer_info;
+    PrinterInfo* printer_info = nullptr;
     ArgumentParser parser(&bvi, &printer_info);
     GithubRequestManager grm(&bvi);
 
@@ -30,52 +30,58 @@ int main(int argc, char** argv) {
         schedule_timer.set_schedule();
 
         while(true) {
-            // Caall Printing Status
-            bool succeed = printer_info.checkPrintingStatus();
-            if (!succeed) {
-                // Network might be failed or whatever.
-                // 5 hour delay
-                cout << "Cannot check printing status" << endl;
-            } else {
-                if (printer_info.getisPrinting()) {
-                    // Printer is using. 5 hour delay needed.
+            int printer_ctr = parser.getPrinterCount();
+            for (int i = 0 ; i < printer_ctr; i++) {
+                LOG_V("Working printer " + to_string(i));
+                // Caall Printing Status
+                bool succeed = printer_info[i].checkPrintingStatus();
+                if (!succeed) {
+                    // Network might be failed or whatever.
+                    // 5 hour delay
+                    cout << "Cannot check printing status" << endl;
                 } else {
-                    // Since printer is not using, so back up current connection settings
-                    bool succeed = printer_info.backupConnectionInfo();
-
-                    if (!succeed) {
-                        // Network might be failed or whatever.
-                        // 5 hour delay!
-                        cout << "Cannot ge t printing information from local octoprint server" << endl;
+                    if (printer_info[i].getisPrinting()) {
+                        // Printer is using. 5 hour delay needed.
                     } else {
-                        // Get hex file from github
-                        bool succ = grm.download_hex();
-                        if (!succ) {
-                            // Download or build failed
-                            return -1;
-                        }
+                        // Since printer is not using, so back up current connection settings
+                        bool succeed = printer_info[i].backupConnectionInfo();
 
-                        // upload it
-                        printer_info.upload_printer();
+                        if (!succeed) {
+                            // Network might be failed or whatever.
+                            // 5 hour delay!
+                            cout << "Cannot get printing information from local octoprint server" << endl;
+                        } else {
+                            // Get hex file from github
+                            bool succ = grm.download_hex();
+                            if (!succ) {
+                                // Download or build failed
+                                return -1;
+                            }
 
-                        // clean up
-                        grm.cleanup();
-                        printer_info.cleanup();
+                            // upload it
+                            printer_info[i].upload_printer();
 
-                        // reconnect it
-                        bool success = printer_info.reconnect_server();
-                        if (!success) {
-                            cout << "Error" << endl;
-                            Logger::close_stream();
-                            return -1;
+                            // clean up
+                            grm.cleanup();
+                            printer_info[i].cleanup();
+
+                            // reconnect it
+                            bool success = printer_info[i].reconnect_server();
+                            if (!success) {
+                                cout << "Error" << endl;
+                                Logger::close_stream();
+                                return -1;
+                            }
                         }
                     }
                 }
             }
-
             // sleep for desired seconds
             schedule_timer.sleep_des();
         }
+    }
+    if (printer_info != nullptr) {
+        delete[] printer_info;
     }
     Logger::close_stream();
     return 0;

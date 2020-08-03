@@ -20,6 +20,10 @@ void ArgumentParser::call_error(const int errcode) {
     }
 }
 
+int ArgumentParser::getPrinterCount() {
+    return this->prt_count;
+}
+
 bool ArgumentParser::parser_args(int argc, char** argv) {
     string function_code = string(__func__);
     string tmp_logger = "";
@@ -118,45 +122,50 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
             }
 
             // For now, support single one.
-            Json::Value cur_printer = main_json[0];
+            prt_count = main_json.size();
+            LOG_V("Total " + to_string(prt_count) + " printers are detected");
+            *printer_info = new PrinterInfo[prt_count];
+            for (int i = 0; i < prt_count; i++) {
+                Json::Value cur_printer = main_json[i];
 
-            // Printer Type
-            string printer_type_tmp = cur_printer["printer_type"].asString();
-            if (printer_type_tmp != "CoreM" && printer_type_tmp != "SlideFast" && printer_type_tmp != "CoreM_Multi" && printer_type_tmp != "Lugo") {
-                // Error - not supported
-                LOG_E("Unsupported printer type detected, specified printer was: " + printer_type_tmp);
-                return false;
+                // Printer Type
+                string printer_type_tmp = cur_printer["printer_type"].asString();
+                if (printer_type_tmp != "CoreM" && printer_type_tmp != "SlideFast" && printer_type_tmp != "CoreM_Multi" && printer_type_tmp != "Lugo") {
+                    // Error - not supported
+                    LOG_E("Unsupported printer type detected, specified printer was: " + printer_type_tmp);
+                    return false;
+                }
+                shared_variable->printer_type = printer_type_tmp;
+
+                // ApiKey
+                string apikey = cur_printer["api_key"].asString();
+                if (apikey.length() != 32) {
+                    // Something happened with apkey
+                    LOG_E("!!!APIKEY MUST BE 32-BIT LENGTH!!!");
+                    LOG_E("SOMEONE MIGHT MANIPULATED PROGRAM!");
+                    LOG_E("ABORTING PROGRAM TO PROTECT OVERALL SYSTEM!!!");
+                    LOG_E("Specified Apikey: " + apikey);
+                    LOG_E("Apikey Length: " + to_string(apikey.length()));
+                    return false;
+                }
+                
+                // URL
+                string url = cur_printer["main_url"].asString();
+                if (url.find("http") == string::npos) {
+                    // HTTP Protocol not found.
+                    LOG_E("Something wrong about main_url, It usally happens when main_url its syntax is wrong.");
+                    LOG_E("Specified URL: " + url);
+                    return false;
+                }
+
+                // PORT
+                string port = to_string(cur_printer["port"].asInt());
+
+                // force - skip for now.
+
+                // Set printer information
+                (*printer_info)[i].set_command_info(url, apikey, port);
             }
-            shared_variable->printer_type = printer_type_tmp;
-
-            // ApiKey
-            string apikey = cur_printer["api_key"].asString();
-            if (apikey.length() != 32) {
-                // Something happened with apkey
-                LOG_E("!!!APIKEY MUST BE 32-BIT LENGTH!!!");
-                LOG_E("SOMEONE MIGHT MANIPULATED PROGRAM!");
-                LOG_E("ABORTING PROGRAM TO PROTECT OVERALL SYSTEM!!!");
-                LOG_E("Specified Apikey: " + apikey);
-                LOG_E("Apikey Length: " + to_string(apikey.length()));
-                return false;
-            }
-            
-            // URL
-            string url = cur_printer["main_url"].asString();
-            if (url.find("http") == string::npos) {
-                // HTTP Protocol not found.
-                LOG_E("Something wrong about main_url, It usally happens when main_url its syntax is wrong.");
-                LOG_E("Specified URL: " + url);
-                return false;
-            }
-
-            // PORT
-            string port = to_string(cur_printer["port"].asInt());
-
-            // force - skip for now.
-
-            // Set printer information
-            printer_info->set_command_info(url, apikey, port);
             shared_variable->is_used[1] = true;
         } else {
             // Need to handle "Unknown args"
@@ -178,7 +187,13 @@ bool ArgumentParser::parser_args(int argc, char** argv) {
     }
 }
 
-ArgumentParser::ArgumentParser(BasicVariableInfo* b, PrinterInfo* p) {
+ArgumentParser::ArgumentParser(BasicVariableInfo* b, PrinterInfo** p) {
     this->shared_variable = b;
     this->printer_info = p;
 }
+
+// ArgumentParser::~ArgumentParser() {
+//     if (printer_info != nullptr) {
+//         delete[] printer_info;
+//     }
+// }
