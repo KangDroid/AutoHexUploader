@@ -193,7 +193,7 @@ void PrinterInfo::cleanup() {
     system("rm -rf /tmp/arduino");
     #else
     system("rm /tmp/arduino.tar.xz ");
-    system("rm -rf /tmp/arduino")
+    system("rm -rf /tmp/arduino");
     #endif
 }
 

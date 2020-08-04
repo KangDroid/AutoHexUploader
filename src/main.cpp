@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
                 char *const argv_execl[] = {"/Users/kangdroid/autohexuploader/bin/app.out", "--update", NULL};
                 #else
                 string script_file = "/home/pi/autohexuploader/assets/build_ahx.sh";
-                string output_file = "/home/pi/autohexuploader/bin/app.out"
+                string output_file = "/home/pi/autohexuploader/bin/app.out";
                 char *const argv_execl[] = {"/home/pi/autohexuploader/bin/app.out", "--update", NULL};
                 #endif
                 
