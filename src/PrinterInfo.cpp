@@ -1,7 +1,12 @@
 #include "PrinterInfo.h"
 bool PrinterInfo::checkPrintingStatus() {
     LOG_V("Entered.");
-    string output = CALL_REST_OCTO("GET", url + ":" + web_port + "/api/printer", apikey);
+    string output;
+    if (web_port == "0") {
+        output = CALL_REST_OCTO("GET", url + "/api/printer", apikey);
+    } else {
+        output = CALL_REST_OCTO("GET", url + ":" + web_port + "/api/printer", apikey);
+    }
     Json::Value main_json;
     Json::Reader tmp_reader;
     if (!tmp_reader.parse(output, main_json, false)) {
@@ -31,7 +36,12 @@ bool PrinterInfo::checkPrintingStatus() {
 bool PrinterInfo::backupConnectionInfo() {
     string func_code = string(__func__);
     LOG_V("Entered.");
-    string output = CALL_REST_OCTO("GET", url + ":" + web_port + "/api/connection", apikey);
+    string output;
+    if (web_port == "0") {
+        output = CALL_REST_OCTO("GET", url + "/api/connection", apikey);
+    } else {
+        output = CALL_REST_OCTO("GET", url + ":" + web_port + "/api/connection", apikey);
+    }
     Json::Value main_json;
     Json::Reader tmp_reader;
     if (!tmp_reader.parse(output, main_json, false)) {
@@ -67,8 +77,14 @@ void PrinterInfo::printAllInfo() {
 bool PrinterInfo::disconnect_server() {
     string func_code = string(__func__);
     LOG_V("Entered.");
-    CALL_REST_OCTO_DISCONNECT(url + ":" + web_port + "/api/connection", apikey);
-    string output = CALL_REST_OCTO("GET", url + ":" + web_port + "/api/connection", apikey);
+    string output;
+    if (web_port == "0") {
+        CALL_REST_OCTO_DISCONNECT(url + "/api/connection", apikey);
+        output = CALL_REST_OCTO("GET", url + "/api/connection", apikey);
+    } else {
+        CALL_REST_OCTO_DISCONNECT(url + ":" + web_port + "/api/connection", apikey);
+        output = CALL_REST_OCTO("GET", url + "/api/connection", apikey);
+    }
 
     Json::Value main_json;
     Json::Reader tmp_reader;
@@ -157,7 +173,12 @@ bool PrinterInfo::reconnect_server() {
     LOG_V("Entered.");
 
     // Issue Connection Request on Local Server
-    CALL_REST_OCTO_CONNECT(url + ":" + web_port + "/api/connection", apikey, port, baudrate, profile_name);
+    if (web_port == "0") {
+        CALL_REST_OCTO_CONNECT(url + "/api/connection", apikey, port, baudrate, profile_name);
+    } else {
+        CALL_REST_OCTO_CONNECT(url + ":" + web_port + "/api/connection", apikey, port, baudrate, profile_name);
+    }
+    
     sleep(10); //Maximum timeout
 
     // Check printer status
