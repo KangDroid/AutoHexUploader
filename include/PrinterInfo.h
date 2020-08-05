@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <unistd.h>
+#include <filesystem>
 #include "WebRequestManager.h"
 #include "Logger.h"
 #include "json/json.h"
