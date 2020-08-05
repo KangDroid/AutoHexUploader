@@ -106,7 +106,7 @@ int ArgumentParser::parser_args(int argc, char** argv) {
             prt_count = main_json.size() - 1;
             LOG_V("Total " + to_string(prt_count) + " printers are detected");
             *printer_info = new PrinterInfo[prt_count];
-            for (int i = 1; i < prt_count; i++) {
+            for (int i = 1; i < prt_count+1; i++) {
                 Json::Value cur_printer = main_json[i];
 
                 // Printer Type
@@ -144,8 +144,9 @@ int ArgumentParser::parser_args(int argc, char** argv) {
                 // force - skip for now.
 
                 // Set printer information
-                (*printer_info)[i].set_command_info(url, apikey, port);
-                (*printer_info)[i].set_printer_type(printer_type_tmp);
+                LOG_V("Setting Value for PI: " + to_string(i-1));
+                (*printer_info)[i-1].set_command_info(url, apikey, port);
+                (*printer_info)[i-1].set_printer_type(printer_type_tmp);
             }
             shared_variable->is_used[0] = true;
         } else if (!strcmp(argv[i], "--update")) {
