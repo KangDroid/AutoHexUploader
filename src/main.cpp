@@ -57,6 +57,7 @@ int main(int argc, char** argv) {
                 } else {
                     if (printer_info[i].getisPrinting()) {
                         // Printer is using. 5 hour delay needed.
+                        LOG_V("Skipping update due to printer is using..");
                     } else {
                         // Since printer is not using, so back up current connection settings
                         bool succeed = printer_info[i].backupConnectionInfo();
