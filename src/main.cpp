@@ -71,7 +71,8 @@ int main(int argc, char** argv) {
                             bool succ = grm.download_hex(i);
                             if (!succ) {
                                 // Download or build failed
-                                return -1;
+                                LOG_V("Actaully cannot download hex somehow. Skipping this");
+                                continue;
                             }
 
                             // upload it

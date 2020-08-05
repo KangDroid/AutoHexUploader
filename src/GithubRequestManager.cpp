@@ -44,13 +44,14 @@ bool GithubRequestManager::download_hex(int idx) {
     // Call CheckRelease for connectivity and availability
     checkRelease();
     if (!this->is_connected) {
-        cout << "Calling build_hex" << endl;
-        bool succ = build_hex();
-        if (!succ) {
-            // Build also failed
-            LOG_E("Build Hexfile failed detected, Cannot run program more.");
-            return false;
-        }
+        return false;
+        // cout << "Calling build_hex" << endl;
+        // bool succ = build_hex();
+        // if (!succ) {
+        //     // Build also failed
+        //     LOG_E("Build Hexfile failed detected, Cannot run program more.");
+        //     return false;
+        // }
     }
     cout << "Downloading Files..." << endl;
     LOG_V("Downloading files...");
@@ -60,15 +61,16 @@ bool GithubRequestManager::download_hex(int idx) {
     wrm.callRequest(__LINE__, __func__, output, command);
 
     if (!filesystem::exists(save_directory)) {
-        cout << "It does not exists!" << endl;
-        LOG_V("File is not downloaded somehow.");
-        // Need to call build_hex()
-        bool succ = build_hex();
-        if (!succ) {
-            // Build also failed
-            LOG_E("Build Hexfile failed detected, Cannot run program more.");
-            return false;
-        }
+        return false;
+        // cout << "It does not exists!" << endl;
+        // LOG_V("File is not downloaded somehow.");
+        // // Need to call build_hex()
+        // bool succ = build_hex();
+        // if (!succ) {
+        //     // Build also failed
+        //     LOG_E("Build Hexfile failed detected, Cannot run program more.");
+        //     return false;
+        // }
     }
     
     // Unzip it!
