@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
     strftime(buffer_tmp, sizeof(buffer_tmp), "%Y%m%d-%H%M%S", localtime(&current_time));
     string file_name(buffer_tmp);
 
-    bool stream_opened = Logger::initiate_stream("LOG_" + file_name + ".log");
+    bool stream_opened = Logger::initiate_stream("/tmp/LOG_" + file_name + ".log");
     if (!stream_opened) {
         cout << "Error: Logging failed at some reason." << endl;
         cout << "Skipping error logging" << endl;
