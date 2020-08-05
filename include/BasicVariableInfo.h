@@ -5,7 +5,7 @@
 #include <cpprest/http_client.h>
 #include <json/json.h>
 
-#define ARGS_COUNT 2
+#define ARGS_COUNT 1
 
 using namespace std;
 

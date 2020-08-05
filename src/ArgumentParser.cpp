@@ -49,70 +49,7 @@ int ArgumentParser::parser_args(int argc, char** argv) {
     LOG_V("Argument Count: " + to_string(argc) + "\n" + "Arguments: " + tmp_logger);
     // Parse function
     for (int i = 1; i < argc; i++) {
-        if (!strcmp(argv[i], "--duration")) {
-            if (i < argc-1) {
-                i++;
-            } else {
-                call_error(ERR_DURATION_ARGS);
-                LOG_E("Value is not specified for --duration");
-                return -1;
-            }
-            string number;
-            string dur_specifier;
-            string argv_to_string = string(argv[i]);
-            int to_cut = argv_to_string.find(" ");
-            if (to_cut != string::npos) {
-                number = argv_to_string.substr(0, to_cut);
-                dur_specifier = argv_to_string.substr(to_cut+1, argv_to_string.length());
-
-                // Check length of number(Should be 0 to 999);
-                if (number.length() > 3) {
-                    call_error(ERR_DURATION_ARGS);
-                    LOG_E("Duration: Number should be between 0 ~ 999, input was: " + number);
-                    return -1;
-                }
-
-                // Check prefix 0
-                if (number.at(0) == '0') {
-                    call_error(ERR_DURATION_ARGS);
-                    LOG_E("Duration: Prefix 0 is not supported");
-                    return -1;
-                }
-
-                // Check whether this number is actual integer.
-                int converted_number;
-                try {
-                    converted_number = stoi(number);
-                } catch (const exception& expn) {
-                    // Cannot parse as int
-                    call_error(ERR_DURATION_ARGS);
-                    LOG_E("Duration: Cannot convert number: " + number);
-                    return -1;
-                }
-
-                if (converted_number < 1 || converted_number > 999) {
-                    call_error(ERR_DURATION_ARGS);
-                    LOG_E("Duration: Number should be between 0 ~ 999, input was: " + number);
-                    return -1;
-                }
-
-                // Check duration
-                if (dur_specifier != "hour" && dur_specifier != "month" && dur_specifier != "week" && dur_specifier != "day" && dur_specifier != "minute")  {
-                    call_error(ERR_DURATION_ARGS);
-                    LOG_E("Duration: Unsupported duration: " + dur_specifier);
-                    return -1;
-                }
-
-                // set it
-                shared_variable->duration = dur_specifier;
-                shared_variable->duration_number = converted_number;
-                shared_variable->is_used[0] = true;
-            } else {
-                call_error(ERR_DURATION_ARGS);
-                LOG_E("Duration: Specifier not found: " + argv_to_string);
-                return -1;
-            }
-        } else if (!strcmp(argv[i], "--web_info")) {
+        if (!strcmp(argv[i], "--web_info")) {
             if (i < argc-1) {
                 i++;
             } else {
@@ -140,11 +77,36 @@ int ArgumentParser::parser_args(int argc, char** argv) {
                 return -1;
             }
 
+            // Parse duration information
+            Json::Value duration_info = main_json[0];
+            if (duration_info["duration_int"].isNull() || duration_info["duration_string"].isNull()) {
+                LOG_E("Cannot find information about timer");
+                return -1;
+            }
+            int duration_num = duration_info["duration_int"].asInt();
+            string duration_specifier = duration_info["duration_string"].asString();
+
+            if (duration_num < 1 || duration_num > 999) {
+                call_error(ERR_DURATION_ARGS);
+                LOG_E("Duration: Number should be between 0 ~ 999, input was: " + to_string(duration_num));
+                return -1;
+            }
+
+            // Check duration
+            if (duration_specifier != "hour" && duration_specifier != "month" && duration_specifier != "week" && duration_specifier != "day" && duration_specifier != "minute")  {
+                call_error(ERR_DURATION_ARGS);
+                LOG_E("Duration: Unsupported duration: " + duration_specifier);
+                return -1;
+            }
+
+            shared_variable->duration = duration_specifier;
+            shared_variable->duration_number = duration_num;
+
             // For now, support single one.
-            prt_count = main_json.size();
+            prt_count = main_json.size() - 1;
             LOG_V("Total " + to_string(prt_count) + " printers are detected");
             *printer_info = new PrinterInfo[prt_count];
-            for (int i = 0; i < prt_count; i++) {
+            for (int i = 1; i < prt_count; i++) {
                 Json::Value cur_printer = main_json[i];
 
                 // Printer Type
@@ -185,7 +147,7 @@ int ArgumentParser::parser_args(int argc, char** argv) {
                 (*printer_info)[i].set_command_info(url, apikey, port);
                 (*printer_info)[i].set_printer_type(printer_type_tmp);
             }
-            shared_variable->is_used[1] = true;
+            shared_variable->is_used[0] = true;
         } else if (!strcmp(argv[i], "--update")) {
             // Update detected.
             return 0;

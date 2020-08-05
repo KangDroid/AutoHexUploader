@@ -10,7 +10,7 @@
 #include "GithubRequestManager.h"
 #include "UpdateManager.h"
 
-#define ARGS_COUNT 2
+#define ARGS_COUNT 1
 
 using namespace std;
 
