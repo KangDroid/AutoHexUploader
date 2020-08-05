@@ -14,6 +14,8 @@ private:
     BasicVariableInfo* shared_variable;
     PrinterInfo** printer_info;
     int prt_count;
+    string file_path;
+    time_t cur_mod_file;
 public:
     ArgumentParser(BasicVariableInfo* b, PrinterInfo** p);
     //~ArgumentParser();
@@ -21,5 +23,8 @@ public:
     void call_error(const int errcode);
     int getPrinterCount();
     void setprt_count(int ctr);
+    string getfile_path();
+    void set_cur_modfile(time_t time_us);
+    time_t get_mod_file();
 };
 #endif // __ARGUMENTPARSER_H__

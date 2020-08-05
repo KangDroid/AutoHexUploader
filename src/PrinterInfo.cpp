@@ -79,11 +79,14 @@ bool PrinterInfo::disconnect_server() {
     LOG_V("Entered.");
     string output;
     if (web_port == "0") {
+        cout << "Web port is 0" << endl;
+        LOG_V("URLINFO: " + url + "/api/connection" );
         CALL_REST_OCTO_DISCONNECT(url + "/api/connection", apikey);
         output = CALL_REST_OCTO("GET", url + "/api/connection", apikey);
     } else {
+        LOG_V("URLINFO: " + url + ":" + web_port + "/api/connection" );
         CALL_REST_OCTO_DISCONNECT(url + ":" + web_port + "/api/connection", apikey);
-        output = CALL_REST_OCTO("GET", url + "/api/connection", apikey);
+        output = CALL_REST_OCTO("GET", url + ":" + web_port + "/api/connection", apikey);
     }
 
     Json::Value main_json;

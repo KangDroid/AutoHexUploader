@@ -111,6 +111,80 @@ void Timer::show_schedule() {
     }
 }
 
+void Timer::update_file(PrinterInfo** printer_info, ArgumentParser* ap, atomic< bool >& run) {
+    //ap->set_cur_modfile(decltype(file_time)::clock::to_time_t(file_time));
+    while (run) {
+        string path = ap->getfile_path();
+        filesystem::path path_in_fs = path;
+        auto file_time = filesystem::last_write_time(path_in_fs);
+        time_t tmp_time = decltype(file_time)::clock::to_time_t(file_time);
+        LOG_V("Current[saved]: " + to_string(ap->get_mod_file()));
+        LOG_V("File Time[cur]: " + to_string(tmp_time));
+        if (ap->get_mod_file() < tmp_time) {
+            ap->set_cur_modfile(tmp_time);
+            ifstream input_stream(path);
+            Json::Value main_json;
+            Json::Reader tmp_reader;
+            if (!tmp_reader.parse(input_stream, main_json)) {
+                // error
+                LOG_E("Cannot parse json file, Please see detailed information: \n" + tmp_reader.getFormattedErrorMessages());
+                return;
+            }
+
+            // For now, support single one.
+            int prt_count = main_json.size();
+            LOG_V("Total " + to_string(prt_count) + " printers are detected");
+            if (*printer_info != nullptr) {
+                delete[] *printer_info;
+            }
+            *printer_info = new PrinterInfo[prt_count];
+            for (int i = 0; i < prt_count; i++) {
+                Json::Value cur_printer = main_json[i];
+
+                // Printer Type
+                string printer_type_tmp = cur_printer["printer_type"].asString();
+                if (printer_type_tmp != "CoreM" && printer_type_tmp != "SlideFast" && printer_type_tmp != "CoreM_Multi" && printer_type_tmp != "Lugo") {
+                    // Error - not supported
+                    LOG_E("Unsupported printer type detected, specified printer was: " + printer_type_tmp);
+                    return;
+                }
+
+                // ApiKey
+                string apikey = cur_printer["api_key"].asString();
+                if (apikey.length() != 32) {
+                    // Something happened with apkey
+                    LOG_E("!!!APIKEY MUST BE 32-BIT LENGTH!!!");
+                    LOG_E("SOMEONE MIGHT MANIPULATED PROGRAM!");
+                    LOG_E("ABORTING PROGRAM TO PROTECT OVERALL SYSTEM!!!");
+                    LOG_E("Specified Apikey: " + apikey);
+                    LOG_E("Apikey Length: " + to_string(apikey.length()));
+                    return;
+                }
+                
+                // URL
+                string url = cur_printer["main_url"].asString();
+                if (url.find("http") == string::npos) {
+                    // HTTP Protocol not found.
+                    LOG_E("Something wrong about main_url, It usally happens when main_url its syntax is wrong.");
+                    LOG_E("Specified URL: " + url);
+                    return;
+                }
+
+                // PORT
+                string port = to_string(cur_printer["port"].asInt());
+
+                // force - skip for now.
+
+                // Set printer information
+                (*printer_info)[i].set_command_info(url, apikey, port);
+                (*printer_info)[i].set_printer_type(printer_type_tmp);
+            }
+            LOG_V("File modified! - Reconfiguration");
+        }
+        sleep(3);
+    }
+}
+
 void Timer::sleep_des() {
     const int offset = -1;
     time_t popped_val = next_execution.front();

@@ -5,9 +5,12 @@
 #include <ctime>
 #include <queue>
 #include <unistd.h>
+#include <atomic>
+#include <thread>
 
 #include "BasicVariableInfo.h"
 #include "Logger.h"
+#include "ArgumentParser.h"
 
 #define MAX_SCHEDULE 7
 
@@ -46,5 +49,6 @@ public:
 
     void get_backup_info(int& year, int& month, int& day, int& hour, int& min, string& duration, queue<time_t>& tmp_queue);
     void restore_info(int year, int month, int day, int hour, int min, string duration, queue<time_t>& queue_restore);
+    static void update_file(PrinterInfo** printer_info, ArgumentParser* ap, atomic< bool >& run );
 };
 #endif // __TIMER_H__

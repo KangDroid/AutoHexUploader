@@ -1,5 +1,17 @@
 #include "ArgumentParser.h"
 
+string ArgumentParser::getfile_path() {
+    return this->file_path;
+}
+
+void ArgumentParser::set_cur_modfile(time_t time_us) {
+    this->cur_mod_file = time_us;
+}
+
+time_t ArgumentParser::get_mod_file() {
+    return this->cur_mod_file;
+}
+
 void ArgumentParser::call_error(const int errcode) { 
     switch (errcode) {
         case ERR_PRINTER_TYPE_ARGS:
@@ -108,15 +120,18 @@ int ArgumentParser::parser_args(int argc, char** argv) {
                 LOG_E("Error on web info argument: " + string(argv[i]));
                 return -1;
             }
-            string tmp_store = string(argv[i]);
-            if (!filesystem::exists(tmp_store)) {
+            this->file_path = string(argv[i]);
+            if (!filesystem::exists(file_path)) {
                 // File does not exists
-                LOG_E("Specified file does not exists!\nSpecified File Path: " + tmp_store);
+                LOG_E("Specified file does not exists!\nSpecified File Path: " + file_path);
                 return -1;
             }
+            filesystem::path path_in_fs = this->file_path;
+            auto file_time = filesystem::last_write_time(path_in_fs);
+            this->cur_mod_file = decltype(file_time)::clock::to_time_t(file_time);
 
             // Parse it
-            ifstream input_stream(tmp_store);
+            ifstream input_stream(file_path);
             Json::Value main_json;
             Json::Reader tmp_reader;
             if (!tmp_reader.parse(input_stream, main_json)) {
