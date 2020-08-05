@@ -78,7 +78,12 @@ bool GithubRequestManager::download_hex(int idx) {
     wrm.callRequest(__LINE__, __func__, output, command);
 
     // Move it!
-    command = "mv /tmp/tmp/" + (*pi)[idx].get_printer_type() + "*.hex " + file_store;
+    if ((*pi)[idx].get_printer_type() == "CoreM") {
+        command = "mv /tmp/tmp/" + (*pi)[idx].get_printer_type() + "_2*.hex " + file_store;
+    } else {
+        command = "mv /tmp/tmp/" + (*pi)[idx].get_printer_type() + "*.hex " + file_store;
+    }
+    
     wrm.callRequest(__LINE__, __func__, output, command);
 
     LOG_V("Successfully downloaded hex file.");
