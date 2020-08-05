@@ -111,7 +111,7 @@ void Timer::show_schedule() {
     }
 }
 
-void Timer::update_file(PrinterInfo** printer_info, ArgumentParser* ap, atomic< bool >& run) {
+void Timer::update_file(Timer* tmr, BasicVariableInfo* sh_var, PrinterInfo** printer_info, ArgumentParser* ap, atomic< bool >& run) {
     //ap->set_cur_modfile(decltype(file_time)::clock::to_time_t(file_time));
     while (run) {
         string path = ap->getfile_path();
@@ -130,15 +130,39 @@ void Timer::update_file(PrinterInfo** printer_info, ArgumentParser* ap, atomic< 
                 LOG_E("Cannot parse json file, Please see detailed information: \n" + tmp_reader.getFormattedErrorMessages());
                 return;
             }
+            // Parse duration information
+            Json::Value duration_info = main_json[0];
+            if (duration_info["duration_int"].isNull() || duration_info["duration_string"].isNull()) {
+                LOG_E("Cannot find information about timer");
+                return;
+            }
+            int duration_num = duration_info["duration_int"].asInt();
+            string duration_specifier = duration_info["duration_string"].asString();
+
+            if (duration_num < 1 || duration_num > 999) {
+                LOG_E("Duration: Number should be between 0 ~ 999, input was: " + to_string(duration_num));
+                return;
+            }
+
+            // Check duration
+            if (duration_specifier != "hour" && duration_specifier != "month" && duration_specifier != "week" && duration_specifier != "day" && duration_specifier != "minute")  {
+                LOG_E("Duration: Unsupported duration: " + duration_specifier);
+                return;
+            }
+
+            sh_var->duration = duration_specifier;
+            sh_var->duration_number = duration_num;
+            tmr->clear_schedule(); // clear schedule before rescheduling it
+            tmr->set_schedule();
 
             // For now, support single one.
-            int prt_count = main_json.size();
+            int prt_count = main_json.size()-1;
             LOG_V("Total " + to_string(prt_count) + " printers are detected");
             if (*printer_info != nullptr) {
                 delete[] *printer_info;
             }
             *printer_info = new PrinterInfo[prt_count];
-            for (int i = 0; i < prt_count; i++) {
+            for (int i = 1; i < prt_count; i++) {
                 Json::Value cur_printer = main_json[i];
 
                 // Printer Type
@@ -202,6 +226,11 @@ void Timer::sleep_des() {
     LOG_V("Cur: " + to_string(cur));
     LOG_V("Popped Val: " + to_string(popped_val));
     sleep(to_sleep - offset);
+}
+
+void Timer::clear_schedule() {
+    queue<time_t> empty;
+    swap(next_execution, empty);
 }
 
 void Timer::get_backup_info(int& year, int& month, int& day, int& hour, int& min, string& duration, queue<time_t>& tmp_queue) {

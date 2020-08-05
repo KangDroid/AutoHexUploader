@@ -120,7 +120,7 @@ int main(int argc, char** argv) {
             }
             // sleep for desired seconds
             atomic< bool > run{ true };
-            thread th{ Timer::update_file, &printer_info, &parser, std::ref( run ) };
+            thread th{ Timer::update_file, &schedule_timer, &bvi, &printer_info, &parser, std::ref( run ) };
             schedule_timer.sleep_des();
             run = false;
             th.join();

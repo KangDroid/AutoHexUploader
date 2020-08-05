@@ -47,8 +47,10 @@ public:
     // sleep for desired seconds
     void sleep_des();
 
+    void clear_schedule();
+
     void get_backup_info(int& year, int& month, int& day, int& hour, int& min, string& duration, queue<time_t>& tmp_queue);
     void restore_info(int year, int month, int day, int hour, int min, string duration, queue<time_t>& queue_restore);
-    static void update_file(PrinterInfo** printer_info, ArgumentParser* ap, atomic< bool >& run );
+    static void update_file(Timer* tmr, BasicVariableInfo* sh_var, PrinterInfo** printer_info, ArgumentParser* ap, atomic< bool >& run );
 };
 #endif // __TIMER_H__
