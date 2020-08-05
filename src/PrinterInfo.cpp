@@ -118,7 +118,7 @@ bool PrinterInfo::disconnect_server() {
 bool PrinterInfo::upload_printer()  {
     string func_code = string(__func__);
     LOG_V("Entered.");
-    string to_upload = "/Users/kangdroid/Desktop/Marlin.hex"; // This needs to be forwared from githubrequest.
+    string to_upload = "/tmp/CompiledHex.hex"; // This needs to be forwared from githubrequest.
     string command;
     // First disconnect from octoprint server
     bool succeed = disconnect_server();
