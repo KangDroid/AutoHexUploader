@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
 
                             // clean up
                             grm.cleanup();
-                            printer_info[i].cleanup();
+                            //printer_info[i].cleanup();
 
                             // reconnect it
                             bool success = printer_info[i].reconnect_server();

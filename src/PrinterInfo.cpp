@@ -129,13 +129,16 @@ bool PrinterInfo::upload_printer()  {
     }
     #if defined(__APPLE__)
     // Download arduino
-    command = "wget https://www.arduino.cc/download.php?f=/arduino-1.8.13-macosx.zip -O /tmp/arduino.zip 2>&1";
     string output;
-    wrm.callRequest(__LINE__, __func__, output, command);
+    if (!filesystem::exists("/tmp/arduino.zip")) {
+        command = "wget https://www.arduino.cc/download.php?f=/arduino-1.8.13-macosx.zip -O /tmp/arduino.zip 2>&1";
+        wrm.callRequest(__LINE__, __func__, output, command);
+        // Unzip it
+        command = "unzip -q /tmp/arduino.zip -d /tmp/arduino";
+        wrm.callRequest(__LINE__, __func__, output, command);
+    }
 
-    // Unzip it
-    command = "unzip -q /tmp/arduino.zip -d /tmp/arduino";
-    wrm.callRequest(__LINE__, __func__, output, command);
+   
 
     // Find avrdude.conf
     string avrdude_configuration = "/tmp/arduino/Arduino.app/Contents/Java/hardware/tools/avr/etc/avrdude.conf";
@@ -145,16 +148,16 @@ bool PrinterInfo::upload_printer()  {
     #else
     // ARM-Raspberry Pi
     // Download arduino
-    command = "wget https://www.arduino.cc/download.php?f=/arduino-1.8.13-linuxarm.tar.xz -O /tmp/arduino.tar.xz 2>&1";
     string output;
-    wrm.callRequest(__LINE__, __func__, output, command);
-
-
-    // Unzip it
-    command = "mkdir /tmp/arduino";
-    wrm.callRequest(__LINE__, __func__, output, command);
-    command = "tar -xvf /tmp/arduino.tar.xz -C /tmp/arduino";
-    wrm.callRequest(__LINE__, __func__, output, command);
+    if (!filesystem::exists("/tmp/arduino.tar.xz")) {
+        command = "wget https://www.arduino.cc/download.php?f=/arduino-1.8.13-linuxarm.tar.xz -O /tmp/arduino.tar.xz 2>&1";
+        wrm.callRequest(__LINE__, __func__, output, command);
+        // Unzip it
+        command = "mkdir /tmp/arduino";
+        wrm.callRequest(__LINE__, __func__, output, command);
+        command = "tar -xvf /tmp/arduino.tar.xz -C /tmp/arduino";
+        wrm.callRequest(__LINE__, __func__, output, command);
+    }
 
     // Find avrdude.conf
     string avrdude_configuration = "/tmp/arduino/arduino-1.8.13/hardware/tools/avr/etc/avrdude.conf";
